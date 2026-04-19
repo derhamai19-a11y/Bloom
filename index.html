@@ -171,6 +171,12 @@
       width: min(100%, 320px);
       height: auto;
       overflow: visible;
+      animation: sfFloat 5s ease-in-out infinite;
+    }
+
+    @keyframes sfFloat {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-4px); }
     }
 
     /* ─── Section card (generic lifted card) ─────────────── */
@@ -988,27 +994,7 @@
           <p>A quiet page for today's habits and sunshine.</p>
         </div>
         <div class="sunflower-hero" aria-hidden="true">
-          <svg viewBox="0 0 320 360" role="img" aria-label="Sunflower">
-            <defs>
-              <radialGradient id="petalGlow" cx="50%" cy="20%" r="70%">
-                <stop offset="0%" stop-color="var(--yellow-highlight)"/>
-                <stop offset="100%" stop-color="var(--yellow)"/>
-              </radialGradient>
-            </defs>
-            <g transform="translate(160 140)">
-              <g fill="var(--yellow)" stroke="var(--ochre)" stroke-width="2">
-                <ellipse rx="34" ry="70" transform="rotate(0) translate(0 -70)" />
-                <ellipse rx="34" ry="70" transform="rotate(90) translate(0 -70)" />
-                <ellipse rx="34" ry="70" transform="rotate(180) translate(0 -70)" />
-                <ellipse rx="34" ry="70" transform="rotate(270) translate(0 -70)" />
-              </g>
-              <circle cx="0" cy="0" r="60" fill="var(--centre-outer)" />
-              <circle cx="0" cy="0" r="42" fill="var(--centre-inner)" />
-            </g>
-            <path d="M160 200 C150 240 150 280 160 320" fill="none" stroke="var(--sage)" stroke-width="18" stroke-linecap="round"/>
-            <path d="M160 240 C130 230 110 270 108 292" fill="none" stroke="var(--sage)" stroke-width="14" stroke-linecap="round"/>
-            <path d="M160 260 C190 255 210 295 212 315" fill="none" stroke="var(--sage)" stroke-width="14" stroke-linecap="round"/>
-          </svg>
+          <svg id="sunflowerSvg" viewBox="-10 -5 340 430" role="img" aria-label="Sunflower"></svg>
         </div>
       </section>
 
@@ -1660,6 +1646,7 @@
 
       closeMealSheet();
       renderMealList(day);
+      renderSunflower(day);
     });
 
     /* Hide error when user types */
@@ -1768,6 +1755,111 @@
       if (loadSettings().theme === 'auto') applyTheme('auto');
     });
 
+    /* ─── Sunflower ──────────────────────────────────────── */
+    function renderSunflower(day) {
+      const t      = loadSettings().targets;
+      const pb     = day.petal_bloom || { calories: 0, protein: 0, salt: 0 };
+      const waterB = Math.min(1, (day.water_ml || 0) / (t.water_ml.min || 2000));
+      const meds   = !!day.meds_taken;
+      const treat  = !!day.isTreatDay;
+      const meals  = day.meals || [];
+      const totCal  = meals.reduce((s, m) => s + (m.estimates?.calories  || 0), 0);
+      const totProt = meals.reduce((s, m) => s + (m.estimates?.protein_g || 0), 0);
+      const totSalt = meals.reduce((s, m) => s + (m.estimates?.salt_g    || 0), 0);
+      const wCups   = Math.round((day.water_ml || 0) / ML_PER_CUP);
+
+      const goalBloom = { 0: pb.calories || 0, 90: pb.protein || 0, 180: pb.salt || 0, 270: waterB };
+      const goalLabel = {
+        0:   { name: 'Calories', val: totCal  ? `${totCal}`   : '—' },
+        90:  { name: 'Protein',  val: totProt ? `${totProt}g` : '—' },
+        180: { name: 'Salt',     val: totSalt ? `${totSalt}g` : '—' },
+        270: { name: 'Water',    val: `${wCups}/${CUPS}` },
+      };
+
+      const CX = 160, CY = 155, RING = 58;
+
+      // ── petals (16, evenly spaced; goal petals at 0, 90, 180, 270°) ──
+      let petals = '';
+      for (let i = 0; i < 16; i++) {
+        const angle  = i * 22.5;
+        const isGoal = i % 4 === 0;
+        const bloom  = isGoal ? Math.max(0, goalBloom[angle] || 0) : 1;
+        const maxLen = isGoal ? 72 : 50;
+        const minLen = isGoal ? 5  : 50;
+        const len    = minLen + (maxLen - minLen) * (isGoal ? bloom : 1);
+        const w      = isGoal ? Math.max(5, 30 * Math.sqrt(Math.max(bloom, 0.04))) : 21;
+        const dist   = RING + len / 2;
+        const fill   = isGoal ? 'var(--yellow)' : 'rgba(240,188,24,0.55)';
+        const strk   = isGoal ? 'var(--ochre)'  : 'rgba(200,146,10,0.3)';
+        petals += `<g transform="rotate(${angle},${CX},${CY}) translate(${CX},${(CY - dist).toFixed(1)})">
+          <ellipse cx="0" cy="0" rx="${w.toFixed(1)}" ry="${(len/2).toFixed(1)}"
+            fill="${fill}" stroke="${strk}" stroke-width="${isGoal ? 1.8 : 1}"
+            opacity="${isGoal ? 1 : 0.82}"/>
+        </g>`;
+      }
+
+      // ── labels ──
+      let labels = '';
+      const labelDist = RING + 72 + 18;
+      for (const [aStr, info] of Object.entries(goalLabel)) {
+        const rad = (parseInt(aStr) * Math.PI) / 180;
+        const lx  = CX + Math.sin(rad) * labelDist;
+        const ly  = CY - Math.cos(rad) * labelDist;
+        labels += `<text text-anchor="middle">
+          <tspan x="${lx.toFixed(1)}" y="${(ly - 5.5).toFixed(1)}"
+            font-family="Lora,serif" font-size="8.5" fill="var(--ink-soft)">${info.name}</tspan>
+          <tspan x="${lx.toFixed(1)}" dy="12"
+            font-family="Fraunces,serif" font-size="11" fill="var(--ink-mid)">${info.val}</tspan>
+        </text>`;
+      }
+
+      // ── stem & leaves ──
+      const s0 = CY + RING;
+      const stem = `
+        <path d="M${CX} ${s0} C${CX-14} ${s0+70} ${CX+14} ${s0+140} ${CX} 385"
+          fill="none" stroke="var(--sage)" stroke-width="16" stroke-linecap="round"/>
+        <path d="M${CX} ${s0+90} C${CX-55} ${s0+70} ${CX-85} ${s0+110} ${CX-62} ${s0+140}"
+          fill="var(--sage)" opacity="0.75"/>
+        <path d="M${CX} ${s0+140} C${CX+55} ${s0+120} ${CX+85} ${s0+160} ${CX+62} ${s0+190}"
+          fill="var(--sage)" opacity="0.75"/>`;
+
+      // ── treat-day vase ──
+      const vase = treat ? `<g>
+        <path d="M138 383 Q128 400 131 420 L189 420 Q192 400 182 383 Z"
+          fill="var(--cobalt)" opacity="0.7"/>
+        <rect x="131" y="380" width="58" height="7" rx="3.5"
+          fill="var(--cobalt)" opacity="0.85"/>
+        <ellipse cx="${CX}" cy="424" rx="32" ry="5" fill="var(--cobalt)" opacity="0.35"/>
+      </g>` : '';
+
+      // ── Van Gogh swirls ──
+      const swirls = `<g fill="none" stroke="var(--yellow)" stroke-linecap="round" opacity="0.10">
+        <path d="M15 30 Q70 8 130 35 T250 25"  stroke-width="3.5"/>
+        <path d="M18 68 Q78 44 143 68 T273 58"  stroke-width="2.5"/>
+        <path d="M5 108 Q55 90 108 108 T208 98" stroke-width="2"/>
+        <path d="M258 205 Q235 190 215 205 T175 198" stroke-width="2"/>
+        <path d="M32 338 Q98 318 163 338 T293 326" stroke-width="3"/>
+        <path d="M14 375 Q84 356 160 374 T298 363" stroke-width="2.5"/>
+      </g>`;
+
+      // ── centre disc ──
+      const innerFill = meds ? 'var(--yellow)' : 'var(--centre-inner)';
+      const glowAttr  = meds ? ' filter="url(#sfGlow)"' : '';
+      const centre = `
+        <circle cx="${CX}" cy="${CY}" r="${RING}" fill="var(--centre-outer)"/>
+        <circle cx="${CX}" cy="${CY}" r="40" fill="${innerFill}"${glowAttr}/>`;
+
+      const defs = `<defs>
+        <filter id="sfGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>`;
+
+      document.getElementById('sunflowerSvg').innerHTML =
+        defs + swirls + stem + vase + petals + centre + labels;
+    }
+
     /* ─── Water ──────────────────────────────────────────── */
     const CUPS       = 8;
     const ML_PER_CUP = 250;
@@ -1796,6 +1888,7 @@
         day.water_ml = Math.max(0, (day.water_ml || 0) - ML_PER_CUP);
         saveDay(day);
         renderWater(day);
+        renderSunflower(day);
       }, 550);
     });
 
@@ -1810,6 +1903,7 @@
       day.water_ml = (idx + 1) * ML_PER_CUP;
       saveDay(day);
       renderWater(day);
+      renderSunflower(day);
     });
 
     document.getElementById('waterCups').addEventListener('pointercancel', () => {
@@ -1834,6 +1928,7 @@
       day.meds_taken = !day.meds_taken;
       saveDay(day);
       renderMeds(day);
+      renderSunflower(day);
     });
 
     /* ─── Blood pressure ──────────────────────────────────── */
@@ -1970,6 +2065,7 @@
       renderMeds(today);
       renderBP(today);
       renderMood(today);
+      renderSunflower(today);
       registerServiceWorker();
     })();
   </script>
