@@ -135,7 +135,7 @@
     /* ─── Day screen ─────────────────────────────────────── */
     .day-screen { display: grid; gap: 1rem; }
 
-    /* ─── Cards ──────────────────────────────────────────── */
+    /* ─── Hero card ──────────────────────────────────────── */
     .hero-card {
       padding: 1.5rem;
       border-radius: 32px;
@@ -173,7 +173,31 @@
       overflow: visible;
     }
 
-    /* ─── Stub cards ─────────────────────────────────────── */
+    /* ─── Section card (generic lifted card) ─────────────── */
+    .section-card {
+      padding: 1.25rem;
+      border-radius: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 0 var(--border-strong), 0 6px 24px var(--shadow);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      color: var(--ink-mid);
+      margin: 0;
+      font-weight: 600;
+    }
+
+    /* ─── Stub cards (non-meal placeholders) ─────────────── */
     .placeholder-note {
       padding: 1rem 1.25rem;
       border-radius: 28px;
@@ -201,6 +225,136 @@
       font-size: 1rem;
       color: var(--ink-mid);
       margin-bottom: 0.25rem;
+    }
+
+    /* ─── Meal list ──────────────────────────────────────── */
+    .meal-list {
+      display: grid;
+      gap: 0.65rem;
+      margin-top: 0.85rem;
+    }
+
+    .meal-list:empty { display: none; }
+
+    .meal-row {
+      padding: 0.75rem 0.9rem;
+      background: var(--surface-deep);
+      border-radius: 18px;
+      border: 1px solid var(--border);
+    }
+
+    .meal-row-top {
+      display: flex;
+      gap: 0.65rem;
+      align-items: flex-start;
+    }
+
+    .meal-time {
+      font-family: 'Fraunces', serif;
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+      flex-shrink: 0;
+      padding-top: 0.15rem;
+      min-width: 3.2rem;
+    }
+
+    .meal-desc {
+      font-size: 0.95rem;
+      color: var(--ink);
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .meal-estimates {
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+      margin-top: 0.35rem;
+      padding-left: 3.85rem;
+    }
+
+    .meal-quote {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: var(--ink-mid);
+      margin-top: 0.55rem;
+      padding: 0.5rem 0.75rem;
+      border-left: 2px solid var(--yellow);
+      line-height: 1.55;
+    }
+
+    .meal-empty {
+      text-align: center;
+      color: var(--ink-soft);
+      font-style: italic;
+      font-size: 0.95rem;
+      padding: 0.75rem 0 0.25rem;
+    }
+
+    /* ─── Add-meal CTA (gradient, prominent) ─────────────── */
+    .add-meal-cta {
+      display: block;
+      width: 100%;
+      margin-top: 1rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: 20px;
+      border: none;
+      background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-deep) 100%);
+      color: var(--centre-outer);
+      font-family: 'Lora', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 0 var(--yellow-deep), 0 6px 20px var(--yellow-glow);
+      transition: opacity 150ms, box-shadow 150ms;
+      text-align: center;
+      min-height: 48px;
+    }
+
+    .add-meal-cta:active {
+      opacity: 0.82;
+      box-shadow: 0 1px 0 var(--yellow-deep), 0 2px 8px var(--yellow-glow);
+    }
+
+    /* ─── Buttons ────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.4rem;
+      border-radius: 20px;
+      border: none;
+      font-family: 'Lora', serif;
+      font-size: 0.98rem;
+      cursor: pointer;
+      min-height: 44px;
+      transition: opacity 150ms;
+    }
+
+    .btn:active { opacity: 0.75; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-deep) 100%);
+      color: var(--centre-outer);
+      font-weight: 600;
+      box-shadow: 0 2px 0 var(--yellow-deep), 0 4px 14px var(--yellow-glow);
+    }
+
+    .btn-ghost {
+      background: var(--surface-deep);
+      color: var(--ink-mid);
+      border: 1px solid var(--border-strong);
+    }
+
+    .btn-full { width: 100%; }
+
+    .btn-sm {
+      padding: 0.4rem 0.85rem;
+      font-size: 0.88rem;
+      border-radius: 14px;
+      min-height: 36px;
     }
 
     /* ─── Sheet backdrop ─────────────────────────────────── */
@@ -264,7 +418,7 @@
       justify-content: space-between;
       gap: 1rem;
       align-items: center;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.5rem;
     }
 
     .sheet-header h2 {
@@ -284,6 +438,122 @@
       min-height: 44px;
       display: grid;
       place-items: center;
+    }
+
+    /* ─── Form controls ──────────────────────────────────── */
+    .form-field { margin-top: 1rem; }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ink-mid);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 16px;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface-deep);
+      color: var(--ink);
+      font-family: 'Lora', serif;
+      font-size: 0.98rem;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+      transition: border-color 200ms;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .form-textarea:focus { border-color: var(--yellow-deep); }
+
+    .form-textarea::placeholder { color: var(--ink-soft); }
+
+    .form-select {
+      width: 100%;
+      padding: 0.7rem 2.5rem 0.7rem 1rem;
+      border-radius: 16px;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface-deep);
+      color: var(--ink);
+      font-family: 'Lora', serif;
+      font-size: 0.98rem;
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A07850' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.9rem center;
+    }
+
+    /* ─── Photo picker ───────────────────────────────────── */
+    .photo-area { margin-top: 1rem; }
+
+    .photo-pick-btn {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border-radius: 16px;
+      border: 1.5px dashed var(--border-strong);
+      background: var(--surface-deep);
+      color: var(--ink-soft);
+      font-family: 'Lora', serif;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 180ms, background 180ms;
+      min-height: 48px;
+    }
+
+    .photo-pick-btn:hover, .photo-pick-btn:active {
+      border-color: var(--yellow-deep);
+      background: var(--yellow-highlight);
+    }
+
+    .photo-preview {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .photo-preview img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-clear {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: rgba(0,0,0,0.52);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+
+    /* ─── Meal error message ─────────────────────────────── */
+    .meal-error-msg {
+      margin-top: 0.75rem;
+      padding: 0.7rem 1rem;
+      background: rgba(184,106,16,0.1);
+      border: 1px solid rgba(184,106,16,0.28);
+      border-radius: 14px;
+      color: var(--ochre);
+      font-size: 0.92rem;
+      text-align: center;
+      line-height: 1.5;
     }
 
     /* ─── Settings sections ──────────────────────────────── */
@@ -336,10 +606,7 @@
       min-height: 44px;
     }
 
-    .toggle-row .toggle-label {
-      font-size: 0.98rem;
-      color: var(--ink);
-    }
+    .toggle-row .toggle-label { font-size: 0.98rem; color: var(--ink); }
 
     .toggle {
       position: relative;
@@ -378,9 +645,7 @@
       pointer-events: none;
     }
 
-    .toggle input:checked ~ .toggle-thumb {
-      transform: translateX(20px);
-    }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); }
 
     /* ─── Profile grid ───────────────────────────────────── */
     .profile-grid {
@@ -412,11 +677,7 @@
     }
 
     /* ─── Treat-day counters ─────────────────────────────── */
-    .treat-counts {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 0.5rem;
-    }
+    .treat-counts { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
 
     .treat-count-pill {
       flex: 1;
@@ -458,14 +719,8 @@
       min-height: 44px;
     }
 
-    .collapsible-toggle .arrow {
-      font-size: 0.85rem;
-      transition: transform 200ms;
-    }
-
-    .collapsible-toggle[aria-expanded="true"] .arrow {
-      transform: rotate(180deg);
-    }
+    .collapsible-toggle .arrow { font-size: 0.85rem; transition: transform 200ms; }
+    .collapsible-toggle[aria-expanded="true"] .arrow { transform: rotate(180deg); }
 
     .collapsible-body {
       overflow: hidden;
@@ -508,41 +763,15 @@
       margin-top: 0.1rem;
     }
 
-    /* ─── Buttons ────────────────────────────────────────── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.7rem 1.4rem;
-      border-radius: 20px;
-      border: none;
-      font-family: 'Lora', serif;
-      font-size: 0.98rem;
-      cursor: pointer;
-      min-height: 44px;
-      transition: opacity 150ms;
-    }
-
-    .btn:active { opacity: 0.75; }
-
-    .btn-ghost {
-      background: var(--surface-deep);
-      color: var(--ink-mid);
-      border: 1px solid var(--border-strong);
-    }
-
-    .btn-full { width: 100%; }
-
-    /* ─── Sheet text ─────────────────────────────────────── */
-    .sheet p, .sheet label { font-family: 'Lora', serif; }
-
+    /* ─── Shared helpers ─────────────────────────────────── */
     .help {
       color: var(--ink-soft);
       font-size: 0.92rem;
       line-height: 1.6;
       margin: 0.4rem 0 0;
     }
+
+    .sheet p, .sheet label { font-family: 'Lora', serif; }
 
     /* ─── Media queries ──────────────────────────────────── */
     @media (prefers-color-scheme: dark) {
@@ -555,7 +784,6 @@
   </style>
 </head>
 <body>
-  <!-- Paper grain filter (single definition, referenced by #app) -->
   <svg width="0" height="0" aria-hidden="true" style="position:absolute">
     <filter id="grain">
       <feTurbulence type="fractalNoise" baseFrequency="0.92" numOctaves="3" stitchTiles="stitch" />
@@ -581,7 +809,6 @@
           <div class="date-line" id="todayDate">Loading…</div>
           <p>A quiet page for today's habits and sunshine.</p>
         </div>
-
         <div class="sunflower-hero" aria-hidden="true">
           <svg viewBox="0 0 320 360" role="img" aria-label="Sunflower">
             <defs>
@@ -607,10 +834,14 @@
         </div>
       </section>
 
-      <!-- Meal log stub -->
-      <section class="stub-card" id="mealSection">
-        <strong>Meals</strong>
-        Nothing logged yet — coming in Stage 2.
+      <!-- Meal section (live in Stage 2) -->
+      <section class="section-card" id="mealSection">
+        <div class="section-header">
+          <h3 class="section-title">Meals</h3>
+        </div>
+        <div id="mealList" class="meal-list" aria-live="polite"></div>
+        <p class="meal-empty" id="mealEmpty">A fresh day, ready when you are.</p>
+        <button class="add-meal-cta" id="addMealBtn">＋ Add a meal</button>
       </section>
 
       <!-- Water stub -->
@@ -643,34 +874,82 @@
     </main>
   </div>
 
-  <!-- Sheet backdrop -->
+  <!-- Shared backdrop -->
   <div class="sheet-backdrop" id="sheetBackdrop"></div>
+
+  <!-- Add-meal sheet -->
+  <div class="sheet" id="mealSheet" role="dialog" aria-modal="true" aria-labelledby="mealSheetTitle" tabindex="-1">
+    <div class="sheet-panel">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <h2 id="mealSheetTitle">Add a meal</h2>
+        <button id="closeMealSheet" aria-label="Close">✕</button>
+      </div>
+
+      <!-- Photo picker -->
+      <div class="photo-area" id="photoArea">
+        <div class="photo-preview" id="photoPreview" style="display:none">
+          <img id="photoThumb" alt="Meal photo preview" />
+          <button class="photo-clear" id="photoClear" aria-label="Remove photo">✕</button>
+        </div>
+        <button class="photo-pick-btn" id="photoPickBtn" style="display:block">
+          📷 Add a photo <span style="opacity:0.65;font-size:0.88em">(optional)</span>
+        </button>
+        <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none" aria-hidden="true" />
+      </div>
+
+      <!-- Description -->
+      <div class="form-field">
+        <label class="form-label" for="mealDescription">What did you have?</label>
+        <textarea
+          id="mealDescription"
+          class="form-textarea"
+          rows="3"
+          placeholder="e.g. Poached eggs on wholemeal toast with spinach"
+        ></textarea>
+      </div>
+
+      <!-- Type -->
+      <div class="form-field">
+        <label class="form-label" for="mealType">Meal type</label>
+        <select id="mealType" class="form-select">
+          <option value="home">Home-cooked</option>
+          <option value="processed">Packaged / processed</option>
+          <option value="restaurant">Restaurant / café</option>
+        </select>
+      </div>
+
+      <!-- Error -->
+      <div class="meal-error-msg" id="mealErrorMsg" style="display:none"></div>
+
+      <!-- Submit -->
+      <button class="btn btn-primary btn-full" id="mealSubmitBtn" style="margin-top:1.1rem">
+        Save meal
+      </button>
+    </div>
+  </div>
 
   <!-- Settings sheet -->
   <div class="sheet" id="settingsSheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" tabindex="-1">
     <div class="sheet-panel">
       <div class="sheet-handle"></div>
-
       <div class="sheet-header">
         <h2 id="settingsTitle">Settings</h2>
         <button id="closeSettings" aria-label="Close settings">✕</button>
       </div>
 
-      <!-- ── Theme ── -->
       <div class="setting-section" style="border-top:none;padding-top:0.5rem">
         <div class="setting-section-title">Theme</div>
         <div class="setting-block">
           <label><input type="radio" name="theme" value="auto" /> Auto (follows device)</label>
           <label><input type="radio" name="theme" value="sunflowers" /> Sunflowers</label>
           <label><input type="radio" name="theme" value="starry" /> Starry Night</label>
-          <p class="help">Auto follows your device preference. Sunflowers is warm cream by day; Starry Night is a deep indigo canvas.</p>
+          <p class="help">Auto follows your device preference. Sunflowers is warm cream; Starry Night is deep indigo.</p>
         </div>
       </div>
 
-      <!-- ── Optional features ── -->
       <div class="setting-section">
         <div class="setting-section-title">Optional features</div>
-
         <div class="toggle-row">
           <span class="toggle-label">Symptom log</span>
           <label class="toggle" aria-label="Toggle symptom log">
@@ -680,7 +959,6 @@
           </label>
         </div>
         <p class="help">Back pain, urine colour, and dip notes — useful for nephrology check-ins.</p>
-
         <div class="toggle-row" style="margin-top:0.75rem">
           <span class="toggle-label">Steps log</span>
           <label class="toggle" aria-label="Toggle steps log">
@@ -692,10 +970,9 @@
         <p class="help">A simple daily step count — no targets, no pressure.</p>
       </div>
 
-      <!-- ── Treat days ── -->
       <div class="setting-section">
         <div class="setting-section-title">Treat days</div>
-        <p class="help" style="margin-top:0">Long-press the date on the day screen to mark any day as a treat day. Streaks pause gracefully over treat days.</p>
+        <p class="help" style="margin-top:0">Long-press the date to mark any day as a treat day. Streaks pause gracefully.</p>
         <div class="treat-counts">
           <div class="treat-count-pill">
             <div class="count-num" id="treatCount7">—</div>
@@ -708,22 +985,17 @@
         </div>
       </div>
 
-      <!-- ── Profile & targets ── -->
       <div class="setting-section">
         <div class="setting-section-title">Profile &amp; targets</div>
-        <div class="profile-grid" id="profileGrid">
-          <!-- populated by JS -->
-        </div>
+        <div class="profile-grid" id="profileGrid"></div>
       </div>
 
-      <!-- ── Export ── -->
       <div class="setting-section">
         <div class="setting-section-title">Your data</div>
         <button class="btn btn-ghost btn-full" id="exportBtn">Export all data (JSON)</button>
-        <p class="help" style="margin-top:0.5rem">Exports a single file with every logged day — suitable for sharing with your medical team. Photos are not included.</p>
+        <p class="help" style="margin-top:0.5rem">Exports every logged day — suitable to share with your medical team. Photos not included.</p>
       </div>
 
-      <!-- ── Install instructions ── -->
       <div class="setting-section">
         <button class="collapsible-toggle" id="installToggle" aria-expanded="false" aria-controls="installBody">
           <span>Add to Home Screen</span>
@@ -732,69 +1004,42 @@
         <div class="collapsible-body" id="installBody" role="region">
           <ol class="install-steps">
             <li>Open Bloom in <strong>Safari</strong> on your iPhone.</li>
-            <li>Tap the <strong>Share</strong> button (the box with an arrow at the bottom of the screen).</li>
+            <li>Tap the <strong>Share</strong> button at the bottom of the screen.</li>
             <li>Scroll down and tap <strong>"Add to Home Screen"</strong>.</li>
             <li>Tap <strong>Add</strong> in the top-right corner.</li>
-            <li>Bloom will appear on your home screen and open full-screen, like a native app.</li>
+            <li>Bloom will appear on your home screen and open full-screen.</li>
           </ol>
         </div>
       </div>
-
     </div>
   </div>
 
   <script>
     /* ─────────────────────────────────────────────────────────────
-     * Data shapes (reference — full shapes used across all stages)
+     * Data shapes (reference — used across all stages)
      * ─────────────────────────────────────────────────────────────
      *
      * bloom_settings_v1
-     * {
-     *   version: 1,
-     *   theme: "auto" | "sunflowers" | "starry",
-     *   features: { symptoms: false, steps: false },
-     *   targets: {
-     *     calories:  { max: 1900 },
-     *     protein_g: { max: 85   },
-     *     salt_g:    { max: 5    },
-     *     water_ml:  { min: 2000 }
-     *   },
-     *   profile: { name: "", age: 32, weight_kg: 85.7, height_cm: 170.18 }
-     * }
+     * { version, theme, features: { symptoms, steps },
+     *   targets: { calories: { max }, protein_g: { max }, salt_g: { max }, water_ml: { min } },
+     *   profile: { name, age, weight_kg, height_cm } }
      *
      * bloom_day_v1_YYYY-MM-DD
-     * {
-     *   date: "YYYY-MM-DD",
-     *   isTreatDay: false,
-     *   meals: [
-     *     {
-     *       id: "m_<timestamp>",
-     *       time: "12:34",
-     *       type: "home" | "processed" | "restaurant",
-     *       description: "",
-     *       photoId: "p_<id>" | null,
-     *       estimates: { calories: 0, protein_g: 0, salt_g: 0 },
-     *       aiMessage: ""
-     *     }
-     *   ],
-     *   water_ml: 0,
-     *   meds_taken: false,
-     *   bp: [{ time: "08:00", systolic: 0, diastolic: 0 }],
-     *   mood: { face: 0, words: [] },
-     *   steps: null,
-     *   symptoms: { back_pain: null, urine_colour: null, urine_dip: null },
-     *   petal_bloom: { calories: 0, protein: 0, salt: 0 }
-     *   // water petal always derived live: clamp(water_ml / 2000, 0, 1)
-     * }
+     * { date, isTreatDay, meals: [{ id, time, type, description, photoId,
+     *     estimates: { calories, protein_g, salt_g }, aiMessage }],
+     *   water_ml, meds_taken, bp: [{ time, systolic, diastolic }],
+     *   mood: { face, words }, steps, symptoms: { back_pain, urine_colour, urine_dip },
+     *   petal_bloom: { calories, protein, salt } }
+     *   // water petal derived live: clamp(water_ml / 2000, 0, 1)
      *
-     * bloom_streaks_v1  — derived on demand from day records, not stored as counters
-     * { version: 1 }
-     *
-     * bloom_meta_v1
-     * { installed: "YYYY-MM-DD", lastMigration: 1 }
-     *
-     * bloom_photo_<id>  — base64 JPEG string stored separately
+     * bloom_meta_v1   { installed, lastMigration }
+     * bloom_photo_<id>  base64 JPEG string
      */
+
+    /* ─── Worker config ──────────────────────────────────── */
+    // QUESTION: Replace with your deployed Cloudflare Worker URL and token
+    const WORKER_URL   = 'https://bloom-worker.YOURSUBDOMAIN.workers.dev';
+    const WORKER_TOKEN = 'REPLACE_WITH_YOUR_X_APP_TOKEN';
 
     /* ─── Storage keys ───────────────────────────────────── */
     const STORAGE = {
@@ -845,6 +1090,10 @@
       });
     }
 
+    function formatTime() {
+      return new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    }
+
     /* ─── Storage helpers ────────────────────────────────── */
     function lsGet(key, fallback = null) {
       try {
@@ -859,17 +1108,14 @@
       catch (e) { console.warn('localStorage write failed', e); }
     }
 
-    /* ─── Deep merge (base ← override, both plain objects) ─ */
     function deepMerge(base, override) {
       const out = { ...base };
       for (const key of Object.keys(override)) {
         if (
           override[key] !== null &&
-          typeof override[key] === 'object' &&
-          !Array.isArray(override[key]) &&
+          typeof override[key] === 'object' && !Array.isArray(override[key]) &&
           base[key] !== null &&
-          typeof base[key] === 'object' &&
-          !Array.isArray(base[key])
+          typeof base[key] === 'object' && !Array.isArray(base[key])
         ) {
           out[key] = deepMerge(base[key], override[key]);
         } else {
@@ -886,19 +1132,15 @@
         meta = { installed: isoToday(), lastMigration: 1 };
         lsSet(STORAGE.meta, meta);
       }
-      // Future migration steps go here, guarded by meta.lastMigration version
       lsSet(STORAGE.meta, meta);
     }
 
     /* ─── Settings ───────────────────────────────────────── */
     function loadSettings() {
-      const stored = lsGet(STORAGE.settings, {});
-      return deepMerge(DEFAULT_SETTINGS, stored);
+      return deepMerge(DEFAULT_SETTINGS, lsGet(STORAGE.settings, {}));
     }
 
-    function saveSettings(s) {
-      lsSet(STORAGE.settings, s);
-    }
+    function saveSettings(s) { lsSet(STORAGE.settings, s); }
 
     /* ─── Day record ─────────────────────────────────────── */
     function loadDay(date) {
@@ -916,14 +1158,31 @@
       });
     }
 
-    function saveDay(day) {
-      lsSet(STORAGE.day(day.date), day);
+    function saveDay(day) { lsSet(STORAGE.day(day.date), day); }
+
+    /* ─── Petal bloom (persisted, ceiling model) ─────────── */
+    function recomputePetalBloom(day) {
+      const t = loadSettings().targets;
+      const bloom = { calories: 0, protein: 0, salt: 0 };
+      let totCal = 0, totProt = 0, totSalt = 0;
+
+      for (const meal of day.meals) {
+        totCal  += meal.estimates.calories  || 0;
+        totProt += meal.estimates.protein_g || 0;
+        totSalt += meal.estimates.salt_g    || 0;
+
+        if (totCal  <= t.calories.max)  bloom.calories = Math.min(1, totCal  / t.calories.max);
+        if (totProt <= t.protein_g.max) bloom.protein  = Math.min(1, totProt / t.protein_g.max);
+        if (totSalt <= t.salt_g.max)    bloom.salt     = Math.min(1, totSalt / t.salt_g.max);
+      }
+
+      day.petal_bloom = bloom;
     }
 
     /* ─── Treat-day counters ─────────────────────────────── */
-    function countTreatDays(windowDays) {
+    function countTreatDays(n) {
       let count = 0;
-      for (let i = 0; i < windowDays; i++) {
+      for (let i = 0; i < n; i++) {
         const rec = lsGet(STORAGE.day(isoDateMinus(i)), null);
         if (rec && rec.isTreatDay) count++;
       }
@@ -934,8 +1193,7 @@
     const appRoot = document.documentElement;
 
     function currentSystemTheme() {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'starry' : 'sunflowers';
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'starry' : 'sunflowers';
     }
 
     function applyTheme(theme) {
@@ -947,13 +1205,255 @@
 
     /* ─── Feature flags ──────────────────────────────────── */
     function applyFeatureFlags(features) {
-      document.getElementById('symptomsSection').style.display =
-        features.symptoms ? '' : 'none';
-      document.getElementById('stepsSection').style.display =
-        features.steps ? '' : 'none';
+      document.getElementById('symptomsSection').style.display = features.symptoms ? '' : 'none';
+      document.getElementById('stepsSection').style.display    = features.steps    ? '' : 'none';
     }
 
-    /* ─── Profile card ───────────────────────────────────── */
+    /* ─── Photo compression ──────────────────────────────── */
+    function compressPhoto(file) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          const MAX = 600;
+          const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+          const w = Math.round(img.width * scale);
+          const h = Math.round(img.height * scale);
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          resolve(dataUrl.split(',')[1]); // base64 only, no data URL prefix
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Image load failed')); };
+        img.src = url;
+      });
+    }
+
+    /* ─── Worker call ────────────────────────────────────── */
+    async function callWorker(payload) {
+      const resp = await fetch(`${WORKER_URL}/estimate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-App-Token': WORKER_TOKEN,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!resp.ok) throw new Error(`Worker ${resp.status}`);
+      return resp.json();
+    }
+
+    /* ─── Meal list rendering ────────────────────────────── */
+    function renderMealList(day) {
+      const list  = document.getElementById('mealList');
+      const empty = document.getElementById('mealEmpty');
+
+      if (!day.meals.length) {
+        list.innerHTML = '';
+        empty.style.display = '';
+        return;
+      }
+
+      empty.style.display = 'none';
+      list.innerHTML = day.meals.map(meal => {
+        const est = meal.estimates;
+        const estimatesLine = [
+          est.calories  ? `${est.calories} kcal`   : null,
+          est.protein_g ? `${est.protein_g}g protein` : null,
+          est.salt_g    ? `${est.salt_g}g salt`    : null,
+        ].filter(Boolean).join(' · ');
+
+        return `
+          <div class="meal-row">
+            <div class="meal-row-top">
+              <span class="meal-time">${meal.time}</span>
+              <span class="meal-desc">${escHtml(meal.description)}</span>
+            </div>
+            ${estimatesLine ? `<div class="meal-estimates">${estimatesLine}</div>` : ''}
+            ${meal.aiMessage ? `<div class="meal-quote">${escHtml(meal.aiMessage)}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    /* ─── Meal sheet state ───────────────────────────────── */
+    let currentPhotoFile = null;
+    let mealSheetOpen = false;
+
+    const mealSheet     = document.getElementById('mealSheet');
+    const sheetBackdrop = document.getElementById('sheetBackdrop');
+    const mealDescription = document.getElementById('mealDescription');
+    const mealType        = document.getElementById('mealType');
+    const mealSubmitBtn   = document.getElementById('mealSubmitBtn');
+    const mealErrorMsg    = document.getElementById('mealErrorMsg');
+    const photoInput      = document.getElementById('photoInput');
+    const photoPickBtn    = document.getElementById('photoPickBtn');
+    const photoPreview    = document.getElementById('photoPreview');
+    const photoThumb      = document.getElementById('photoThumb');
+    const photoClear      = document.getElementById('photoClear');
+
+    function openMealSheet() {
+      mealSheetOpen = true;
+      mealSheet.classList.add('active');
+      sheetBackdrop.classList.add('active');
+      mealSheet.focus();
+    }
+
+    function closeMealSheet() {
+      mealSheetOpen = false;
+      mealSheet.classList.remove('active');
+      // Only remove backdrop if settings also closed
+      if (!settingsSheetOpen) sheetBackdrop.classList.remove('active');
+      resetMealForm();
+    }
+
+    function resetMealForm() {
+      mealDescription.value = '';
+      mealType.value = 'home';
+      currentPhotoFile = null;
+      photoInput.value = '';
+      photoPreview.style.display = 'none';
+      photoPickBtn.style.display = 'block';
+      mealErrorMsg.style.display = 'none';
+      setSubmitLoading(false);
+    }
+
+    function setSubmitLoading(loading) {
+      mealSubmitBtn.disabled = loading;
+      mealSubmitBtn.textContent = loading ? 'Thinking…' : 'Save meal';
+    }
+
+    function showMealError(msg) {
+      mealErrorMsg.textContent = msg;
+      mealErrorMsg.style.display = 'block';
+    }
+
+    /* Photo pick */
+    photoPickBtn.addEventListener('click', () => photoInput.click());
+
+    photoInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      currentPhotoFile = file;
+      const previewUrl = URL.createObjectURL(file);
+      photoThumb.src = previewUrl;
+      photoThumb.onload = () => URL.revokeObjectURL(previewUrl);
+      photoPreview.style.display = 'block';
+      photoPickBtn.style.display = 'none';
+      mealErrorMsg.style.display = 'none';
+    });
+
+    photoClear.addEventListener('click', () => {
+      currentPhotoFile = null;
+      photoInput.value = '';
+      photoPreview.style.display = 'none';
+      photoPickBtn.style.display = 'block';
+    });
+
+    /* Submit */
+    mealSubmitBtn.addEventListener('click', async () => {
+      const description = mealDescription.value.trim();
+      if (!description) {
+        mealDescription.focus();
+        return;
+      }
+
+      mealErrorMsg.style.display = 'none';
+      setSubmitLoading(true);
+
+      const type = mealType.value;
+      const today = isoToday();
+      const day = loadDay(today);
+
+      const payload = { description, type };
+      let photoId = null;
+
+      if (currentPhotoFile) {
+        try {
+          const b64 = await compressPhoto(currentPhotoFile);
+          photoId = `p_${Date.now()}`;
+          lsSet(STORAGE.photo(photoId), b64);
+          payload.imageBase64 = b64;
+        } catch {
+          // Photo failed to compress — continue without it
+        }
+      }
+
+      let result;
+      try {
+        result = await callWorker(payload);
+      } catch {
+        setSubmitLoading(false);
+        showMealError("Couldn't read that one just now — tap Save meal to try again.");
+        return;
+      }
+
+      const meal = {
+        id: `m_${Date.now()}`,
+        time: formatTime(),
+        type,
+        description,
+        photoId,
+        estimates: {
+          calories:  Math.round(Number(result.calories)  || 0),
+          protein_g: Math.round((Number(result.protein_g) || 0) * 10) / 10,
+          salt_g:    Math.round((Number(result.salt_g)    || 0) * 10) / 10,
+        },
+        aiMessage: String(result.message || '').slice(0, 150),
+      };
+
+      day.meals.push(meal);
+      recomputePetalBloom(day);
+      saveDay(day);
+
+      closeMealSheet();
+      renderMealList(day);
+    });
+
+    /* Hide error when user types */
+    mealDescription.addEventListener('input', () => { mealErrorMsg.style.display = 'none'; });
+
+    document.getElementById('addMealBtn').addEventListener('click', openMealSheet);
+    document.getElementById('closeMealSheet').addEventListener('click', closeMealSheet);
+
+    /* ─── Settings sheet ─────────────────────────────────── */
+    let settingsSheetOpen = false;
+    const settingsSheet = document.getElementById('settingsSheet');
+    const themeInputs   = document.querySelectorAll('input[name="theme"]');
+    const featSymptoms  = document.getElementById('featureSymptoms');
+    const featSteps     = document.getElementById('featureSteps');
+
+    function openSettings() {
+      settingsSheetOpen = true;
+      const s = loadSettings();
+      themeInputs.forEach(i => { i.checked = i.value === s.theme; });
+      featSymptoms.checked = !!s.features.symptoms;
+      featSteps.checked    = !!s.features.steps;
+      document.getElementById('treatCount7').textContent  = countTreatDays(7);
+      document.getElementById('treatCount30').textContent = countTreatDays(30);
+      renderProfile(s);
+      settingsSheet.classList.add('active');
+      sheetBackdrop.classList.add('active');
+      settingsSheet.focus();
+    }
+
+    function closeSettingsSheet() {
+      settingsSheetOpen = false;
+      settingsSheet.classList.remove('active');
+      if (!mealSheetOpen) sheetBackdrop.classList.remove('active');
+    }
+
     function renderProfile(settings) {
       const { profile: p, targets: t } = settings;
       const cells = [
@@ -973,38 +1473,18 @@
       `).join('');
     }
 
-    /* ─── Settings sheet ─────────────────────────────────── */
-    const settingsSheet = document.getElementById('settingsSheet');
-    const sheetBackdrop = document.getElementById('sheetBackdrop');
-    const themeInputs   = document.querySelectorAll('input[name="theme"]');
-    const featSymptoms  = document.getElementById('featureSymptoms');
-    const featSteps     = document.getElementById('featureSteps');
-
-    function openSettings() {
-      const s = loadSettings();
-      themeInputs.forEach(i => { i.checked = i.value === s.theme; });
-      featSymptoms.checked = !!s.features.symptoms;
-      featSteps.checked    = !!s.features.steps;
-      document.getElementById('treatCount7').textContent  = countTreatDays(7);
-      document.getElementById('treatCount30').textContent = countTreatDays(30);
-      renderProfile(s);
-      settingsSheet.classList.add('active');
-      sheetBackdrop.classList.add('active');
-      settingsSheet.focus();
-    }
-
-    function closeSettingsSheet() {
-      settingsSheet.classList.remove('active');
-      sheetBackdrop.classList.remove('active');
-    }
-
     document.getElementById('settingsButton').addEventListener('click', openSettings);
     document.getElementById('closeSettings').addEventListener('click', closeSettingsSheet);
-    sheetBackdrop.addEventListener('click', closeSettingsSheet);
+
+    sheetBackdrop.addEventListener('click', () => {
+      if (mealSheetOpen) closeMealSheet();
+      if (settingsSheetOpen) closeSettingsSheet();
+    });
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && settingsSheet.classList.contains('active'))
-        closeSettingsSheet();
+      if (e.key !== 'Escape') return;
+      if (mealSheetOpen) closeMealSheet();
+      else if (settingsSheetOpen) closeSettingsSheet();
     });
 
     themeInputs.forEach(input => {
@@ -1061,6 +1541,7 @@
       applyTheme(s.theme);
       applyFeatureFlags(s.features);
       document.getElementById('todayDate').textContent = formatToday();
+      renderMealList(loadDay(isoToday()));
       registerServiceWorker();
     })();
   </script>
