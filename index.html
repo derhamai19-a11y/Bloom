@@ -957,6 +957,104 @@
 
     .form-input:focus { border-color: var(--yellow-deep); }
 
+    /* ─── Streak display ─────────────────────────────────────── */
+    .streak-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 0.35rem;
+      flex-wrap: wrap;
+      min-height: 1.3rem;
+    }
+
+    .streak-composite {
+      font-family: 'Fraunces', serif;
+      font-size: 0.95rem;
+      color: var(--ink-mid);
+    }
+
+    .streak-pips { display: flex; gap: 0.45rem; }
+
+    .streak-pip { font-size: 0.75rem; color: var(--ink-soft); }
+
+    .treat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.3rem;
+      padding: 0.18rem 0.65rem;
+      background: var(--yellow-highlight);
+      border: 1px solid var(--yellow-deep);
+      border-radius: 20px;
+      font-size: 0.82rem;
+      color: var(--ochre);
+    }
+
+    /* ─── Range slider ────────────────────────────────────────── */
+    input[type='range'] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border-strong);
+      outline: none;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--yellow);
+      border: 2px solid var(--yellow-deep);
+      box-shadow: 0 1px 4px var(--shadow);
+      cursor: pointer;
+    }
+
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--ink-soft);
+      margin-top: 0.2rem;
+    }
+
+    .slider-value {
+      text-align: center;
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      color: var(--ink);
+      margin: 0.2rem 0 0;
+    }
+
+    /* ─── Symptom summary rows ────────────────────────────────── */
+    .symp-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--ink);
+      padding: 0.3rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .symp-row:last-child { border-bottom: none; }
+    .symp-row span:first-child { color: var(--ink-soft); flex-shrink: 0; }
+
+    /* ─── Steps entry ─────────────────────────────────────────── */
+    .steps-entry {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      margin-top: 0.75rem;
+    }
+
+    .steps-entry .form-input { flex: 1; }
+
     /* ─── Media queries ──────────────────────────────────────── */
     @media (prefers-color-scheme: dark) {
       :root[data-theme='sunflowers'] { color-scheme: dark; }
@@ -990,8 +1088,10 @@
       <!-- Hero / sunflower card -->
       <section class="hero-card">
         <div class="hero-copy">
-          <div class="date-line" id="todayDate">Loading…</div>
-          <p>A quiet page for today's habits and sunshine.</p>
+          <div class="date-line" id="todayDate"
+            style="touch-action:manipulation;user-select:none;cursor:default">Loading…</div>
+          <div id="treatBadge" class="treat-badge" style="display:none">🎉 Treat day</div>
+          <div id="streakRow" class="streak-row"></div>
         </div>
         <div class="sunflower-hero" aria-hidden="true">
           <svg id="sunflowerSvg" viewBox="-10 -5 340 430" role="img" aria-label="Sunflower"></svg>
@@ -1049,16 +1149,26 @@
         <div class="mood-chips" id="moodChips" role="group" aria-label="Mood words — pick up to 3"></div>
       </section>
 
-      <!-- Symptom stub — hidden until feature flag on -->
-      <section class="stub-card" id="symptomsSection" style="display:none">
-        <strong>Symptoms</strong>
-        Optional symptom logging coming in Stage 6.
+      <!-- Symptom section — hidden until feature flag on -->
+      <section class="section-card" id="symptomsSection" style="display:none">
+        <div class="section-header">
+          <h3 class="section-title">Symptoms</h3>
+          <button class="btn btn-ghost btn-sm" id="logSymptomsBtn">Log</button>
+        </div>
+        <div id="symptomsDisplay"></div>
       </section>
 
-      <!-- Steps stub — hidden until feature flag on -->
-      <section class="stub-card" id="stepsSection" style="display:none">
-        <strong>Steps</strong>
-        Steps logging coming in Stage 6.
+      <!-- Steps section — hidden until feature flag on -->
+      <section class="section-card" id="stepsSection" style="display:none">
+        <div class="section-header">
+          <h3 class="section-title">Steps</h3>
+        </div>
+        <div class="steps-entry">
+          <input type="number" id="stepsInput" class="form-input"
+            inputmode="numeric" min="0" max="99999" placeholder="e.g. 8500" />
+          <button class="btn btn-ghost btn-sm" id="saveStepsBtn">Save</button>
+        </div>
+        <div id="stepsDisplay"></div>
       </section>
 
       <section class="placeholder-note">
@@ -1231,6 +1341,40 @@
       </div>
       <div class="meal-error-msg" id="bpErrorMsg" style="display:none"></div>
       <button class="btn btn-primary btn-full" id="bpSaveBtn" style="margin-top:1.1rem">Save reading</button>
+    </div>
+  </div>
+
+  <!-- Symptoms sheet -->
+  <div class="sheet" id="symptomsSheet" role="dialog" aria-modal="true" aria-labelledby="sympSheetTitle" tabindex="-1">
+    <div class="sheet-panel">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <h2 id="sympSheetTitle">Log Symptoms</h2>
+        <button id="closeSymptomsSheet" aria-label="Close">✕</button>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="backPainSlider">Back pain</label>
+        <div class="slider-value" id="backPainVal">0</div>
+        <input type="range" id="backPainSlider" min="0" max="10" step="1" value="0" />
+        <div class="range-labels"><span>0 — None</span><span>10 — Severe</span></div>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="urineColourSelect">Urine colour</label>
+        <select id="urineColourSelect" class="form-select">
+          <option value="0">Not noted</option>
+          <option value="1">Pale yellow</option>
+          <option value="2">Straw</option>
+          <option value="3">Amber</option>
+          <option value="4">Dark amber</option>
+          <option value="5">Brown / cloudy</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="dipNotes">Dipstick notes</label>
+        <textarea id="dipNotes" class="form-textarea" rows="2"
+          placeholder="e.g. Protein +1, Blood neg"></textarea>
+      </div>
+      <button class="btn btn-primary btn-full" id="saveSymptomsBtn" style="margin-top:1.1rem">Save symptoms</button>
     </div>
   </div>
 
@@ -1536,7 +1680,7 @@
     function closeMealSheet() {
       mealSheetOpen = false;
       mealSheet.classList.remove('active');
-      if (!settingsSheetOpen && !bpSheetOpen) sheetBackdrop.classList.remove('active');
+      if (!settingsSheetOpen && !bpSheetOpen && !symptomsSheetOpen) sheetBackdrop.classList.remove('active');
       resetMealForm();
     }
 
@@ -1679,7 +1823,7 @@
     function closeSettingsSheet() {
       settingsSheetOpen = false;
       settingsSheet.classList.remove('active');
-      if (!mealSheetOpen && !bpSheetOpen) sheetBackdrop.classList.remove('active');
+      if (!mealSheetOpen && !bpSheetOpen && !symptomsSheetOpen) sheetBackdrop.classList.remove('active');
     }
 
     function renderProfile(settings) {
@@ -1708,6 +1852,7 @@
       if (mealSheetOpen) closeMealSheet();
       if (settingsSheetOpen) closeSettingsSheet();
       if (bpSheetOpen) closeBpSheet();
+      if (symptomsSheetOpen) closeSymptomsSheet();
     });
 
     document.addEventListener('keydown', e => {
@@ -1715,6 +1860,7 @@
       if (mealSheetOpen) closeMealSheet();
       else if (settingsSheetOpen) closeSettingsSheet();
       else if (bpSheetOpen) closeBpSheet();
+      else if (symptomsSheetOpen) closeSymptomsSheet();
     });
 
     themeInputs.forEach(input => {
@@ -1815,13 +1961,19 @@
 
       // ── stem & leaves ──
       const s0 = CY + RING;
+      const streakDays = computeStreaks().composite;
+      const streakLabel = streakDays > 0
+        ? `<text x="${CX}" y="378" text-anchor="middle" font-family="Fraunces,serif" font-size="13"
+            font-weight="700" fill="white" opacity="0.85">${streakDays}d</text>`
+        : '';
       const stem = `
         <path d="M${CX} ${s0} C${CX-14} ${s0+70} ${CX+14} ${s0+140} ${CX} 385"
           fill="none" stroke="var(--sage)" stroke-width="16" stroke-linecap="round"/>
         <path d="M${CX} ${s0+90} C${CX-55} ${s0+70} ${CX-85} ${s0+110} ${CX-62} ${s0+140}"
           fill="var(--sage)" opacity="0.75"/>
         <path d="M${CX} ${s0+140} C${CX+55} ${s0+120} ${CX+85} ${s0+160} ${CX+62} ${s0+190}"
-          fill="var(--sage)" opacity="0.75"/>`;
+          fill="var(--sage)" opacity="0.75"/>
+        ${streakLabel}`;
 
       // ── treat-day vase ──
       const vase = treat ? `<g>
@@ -1965,7 +2117,7 @@
     function closeBpSheet() {
       bpSheetOpen = false;
       bpSheet.classList.remove('active');
-      if (!mealSheetOpen && !settingsSheetOpen) sheetBackdrop.classList.remove('active');
+      if (!mealSheetOpen && !settingsSheetOpen && !symptomsSheetOpen) sheetBackdrop.classList.remove('active');
     }
 
     document.getElementById('logBpBtn').addEventListener('click', openBpSheet);
@@ -2043,6 +2195,155 @@
       renderMood(day);
     });
 
+    /* ─── Streaks ────────────────────────────────────────── */
+    function computeStreak(metricFn) {
+      const waterMin = loadSettings().targets.water_ml.min || 2000;
+      let streak = 0;
+      for (let i = 0; i <= 365; i++) {
+        const rec = lsGet(STORAGE.day(isoDateMinus(i)), null);
+        if (rec?.isTreatDay) continue;          // treat days: skip, don't break
+        if (!rec) {
+          if (i === 0) continue;                // today not logged yet: skip
+          break;
+        }
+        if (!metricFn(rec, waterMin)) {
+          if (i === 0) continue;               // today in progress: skip
+          break;
+        }
+        streak++;
+      }
+      return streak;
+    }
+
+    function computeStreaks() {
+      const wm = loadSettings().targets.water_ml.min || 2000;
+      return {
+        composite: computeStreak((r, w) => (r.meals?.length > 0) && r.meds_taken && (r.water_ml || 0) >= w),
+        meals:     computeStreak(r => (r.meals?.length > 0)),
+        meds:      computeStreak(r => !!r.meds_taken),
+        water:     computeStreak((r, w) => (r.water_ml || 0) >= w),
+      };
+    }
+
+    function renderStreak(day) {
+      const treatBadge = document.getElementById('treatBadge');
+      const streakRow  = document.getElementById('streakRow');
+      treatBadge.style.display = day.isTreatDay ? '' : 'none';
+
+      const s = computeStreaks();
+      if (!s.composite && !s.meals && !s.meds && !s.water) {
+        streakRow.innerHTML = '<span class="streak-composite" style="font-family:Lora,serif;font-size:0.88rem;color:var(--ink-soft)">Start your streak today 🌱</span>';
+        return;
+      }
+      const comp = s.composite > 0
+        ? `<span class="streak-composite">🌻 ${s.composite}d streak</span>` : '';
+      const pips = [
+        s.meals > 0 ? `<span class="streak-pip">🥗 ${s.meals}d</span>` : '',
+        s.meds  > 0 ? `<span class="streak-pip">💊 ${s.meds}d</span>`  : '',
+        s.water > 0 ? `<span class="streak-pip">💧 ${s.water}d</span>` : '',
+      ].filter(Boolean).join('');
+      streakRow.innerHTML = comp + (pips ? `<span class="streak-pips">${pips}</span>` : '');
+    }
+
+    // Long-press date to toggle treat day
+    let dateLongPressTimer = null;
+    const dateEl = document.getElementById('todayDate');
+
+    dateEl.addEventListener('pointerdown', () => {
+      dateLongPressTimer = setTimeout(() => {
+        dateLongPressTimer = null;
+        const day = loadDay(isoToday());
+        day.isTreatDay = !day.isTreatDay;
+        saveDay(day);
+        renderStreak(day);
+        renderSunflower(day);
+      }, 700);
+    });
+    dateEl.addEventListener('pointerup',     () => { clearTimeout(dateLongPressTimer); dateLongPressTimer = null; });
+    dateEl.addEventListener('pointercancel', () => { clearTimeout(dateLongPressTimer); dateLongPressTimer = null; });
+    dateEl.addEventListener('contextmenu',   e => e.preventDefault());
+
+    /* ─── Symptoms ────────────────────────────────────────── */
+    const URINE_LABELS = ['Not noted', 'Pale yellow', 'Straw', 'Amber', 'Dark amber', 'Brown / cloudy'];
+
+    let symptomsSheetOpen = false;
+    const symptomsSheet   = document.getElementById('symptomsSheet');
+
+    function renderSymptoms(day) {
+      const el = document.getElementById('symptomsDisplay');
+      const s  = day.symptoms || {};
+      if (s.back_pain === null && s.back_pain === undefined && !s.urine_colour && !s.urine_dip) {
+        el.innerHTML = '<p class="bp-empty">Nothing logged yet today.</p>';
+        return;
+      }
+      const rows = [];
+      if (s.back_pain != null) {
+        rows.push(`<div class="symp-row"><span>Back pain</span><span>${s.back_pain}/10</span></div>`);
+      }
+      if (s.urine_colour) {
+        rows.push(`<div class="symp-row"><span>Urine colour</span><span>${URINE_LABELS[s.urine_colour] || '—'}</span></div>`);
+      }
+      if (s.urine_dip) {
+        rows.push(`<div class="symp-row"><span>Dipstick notes</span><span>${escHtml(s.urine_dip)}</span></div>`);
+      }
+      el.innerHTML = rows.length ? rows.join('') : '<p class="bp-empty">Nothing logged yet today.</p>';
+    }
+
+    function openSymptomsSheet() {
+      const day = loadDay(isoToday());
+      const s   = day.symptoms || {};
+      document.getElementById('backPainSlider').value      = s.back_pain ?? 0;
+      document.getElementById('backPainVal').textContent   = s.back_pain ?? 0;
+      document.getElementById('urineColourSelect').value   = s.urine_colour ?? 0;
+      document.getElementById('dipNotes').value            = s.urine_dip || '';
+      symptomsSheetOpen = true;
+      symptomsSheet.classList.add('active');
+      sheetBackdrop.classList.add('active');
+      symptomsSheet.focus();
+    }
+
+    function closeSymptomsSheet() {
+      symptomsSheetOpen = false;
+      symptomsSheet.classList.remove('active');
+      if (!mealSheetOpen && !settingsSheetOpen && !bpSheetOpen) sheetBackdrop.classList.remove('active');
+    }
+
+    document.getElementById('backPainSlider').addEventListener('input', e => {
+      document.getElementById('backPainVal').textContent = e.target.value;
+    });
+
+    document.getElementById('logSymptomsBtn').addEventListener('click', openSymptomsSheet);
+    document.getElementById('closeSymptomsSheet').addEventListener('click', closeSymptomsSheet);
+
+    document.getElementById('saveSymptomsBtn').addEventListener('click', () => {
+      const back_pain    = parseInt(document.getElementById('backPainSlider').value, 10);
+      const urine_colour = parseInt(document.getElementById('urineColourSelect').value, 10) || null;
+      const urine_dip    = document.getElementById('dipNotes').value.trim() || null;
+      const day          = loadDay(isoToday());
+      day.symptoms       = { back_pain, urine_colour, urine_dip };
+      saveDay(day);
+      closeSymptomsSheet();
+      renderSymptoms(day);
+    });
+
+    /* ─── Steps ───────────────────────────────────────────── */
+    function renderSteps(day) {
+      const input = document.getElementById('stepsInput');
+      const disp  = document.getElementById('stepsDisplay');
+      input.value = day.steps != null ? day.steps : '';
+      disp.innerHTML = day.steps != null
+        ? `<p style="font-family:'Fraunces',serif;font-size:1.15rem;color:var(--ink);margin:0.5rem 0 0">${day.steps.toLocaleString()} steps today</p>`
+        : '';
+    }
+
+    document.getElementById('saveStepsBtn').addEventListener('click', () => {
+      const v   = parseInt(document.getElementById('stepsInput').value, 10);
+      const day = loadDay(isoToday());
+      day.steps = isNaN(v) || v < 0 ? null : v;
+      saveDay(day);
+      renderSteps(day);
+    });
+
     /* ─── Service worker ─────────────────────────────────── */
     function registerServiceWorker() {
       if ('serviceWorker' in navigator) {
@@ -2065,6 +2366,9 @@
       renderMeds(today);
       renderBP(today);
       renderMood(today);
+      renderStreak(today);
+      renderSymptoms(today);
+      renderSteps(today);
       renderSunflower(today);
       registerServiceWorker();
     })();
