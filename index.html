@@ -10,9 +10,10 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900;9..144,400;9..144,500;9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
   <title>Bloom</title>
   <style>
+    /* ─── Tokens ─────────────────────────────────────────── */
     :root {
       color-scheme: light;
       font-family: 'Lora', serif;
@@ -65,9 +66,8 @@
       --shadow-deep: rgba(0,0,0,0.7);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    /* ─── Reset & base ───────────────────────────────────── */
+    * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
@@ -80,15 +80,19 @@
       line-height: 1.5;
     }
 
+    /* ─── App shell ──────────────────────────────────────── */
     #app {
       min-height: 100vh;
       padding: 1rem 1rem 2rem;
       position: relative;
       overflow-x: hidden;
-      background: radial-gradient(circle at top, var(--yellow-glow), transparent 32%), linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.18) 12%, transparent 24%);
+      background:
+        radial-gradient(circle at top, var(--yellow-glow), transparent 32%),
+        linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.18) 12%, transparent 24%);
       filter: url('#grain');
     }
 
+    /* ─── Top bar ────────────────────────────────────────── */
     .topbar {
       display: flex;
       justify-content: space-between;
@@ -97,10 +101,7 @@
       margin-bottom: 1rem;
     }
 
-    .brand {
-      display: grid;
-      gap: 0.25rem;
-    }
+    .brand { display: grid; gap: 0.25rem; }
 
     .brand .title {
       font-family: 'Fraunces', serif;
@@ -116,7 +117,7 @@
       letter-spacing: 0.15em;
     }
 
-    .topbar button {
+    .icon-btn {
       border: none;
       background: rgba(255,255,255,0.65);
       color: var(--ink);
@@ -128,13 +129,13 @@
       place-items: center;
       box-shadow: 0 2px 0 var(--border-strong), 0 6px 24px var(--shadow);
       cursor: pointer;
+      flex-shrink: 0;
     }
 
-    .day-screen {
-      display: grid;
-      gap: 1rem;
-    }
+    /* ─── Day screen ─────────────────────────────────────── */
+    .day-screen { display: grid; gap: 1rem; }
 
+    /* ─── Cards ──────────────────────────────────────────── */
     .hero-card {
       padding: 1.5rem;
       border-radius: 32px;
@@ -159,6 +160,7 @@
       color: var(--ink-soft);
     }
 
+    /* ─── Sunflower placeholder ──────────────────────────── */
     .sunflower-hero {
       margin-top: 1.5rem;
       display: grid;
@@ -171,6 +173,7 @@
       overflow: visible;
     }
 
+    /* ─── Stub cards ─────────────────────────────────────── */
     .placeholder-note {
       padding: 1rem 1.25rem;
       border-radius: 28px;
@@ -180,14 +183,37 @@
       font-size: 0.98rem;
     }
 
+    .stub-card {
+      padding: 1rem 1.25rem;
+      border-radius: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 0 var(--border-strong), 0 6px 24px var(--shadow);
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+
+    .stub-card strong {
+      display: block;
+      font-style: normal;
+      font-family: 'Fraunces', serif;
+      font-size: 1rem;
+      color: var(--ink-mid);
+      margin-bottom: 0.25rem;
+    }
+
+    /* ─── Sheet backdrop ─────────────────────────────────── */
     .sheet-backdrop {
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.25);
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       opacity: 0;
       pointer-events: none;
       transition: opacity 240ms ease;
+      z-index: 9;
     }
 
     .sheet-backdrop.active {
@@ -195,6 +221,7 @@
       pointer-events: auto;
     }
 
+    /* ─── Sheet ──────────────────────────────────────────── */
     .sheet {
       position: fixed;
       inset: auto 0 0;
@@ -203,7 +230,7 @@
       transition: transform 260ms ease;
       display: grid;
       place-items: center;
-      padding: 0 0.75rem 1rem;
+      padding: 0 0.75rem env(safe-area-inset-bottom, 1rem);
       pointer-events: none;
     }
 
@@ -214,11 +241,22 @@
 
     .sheet-panel {
       width: min(100%, 42rem);
+      max-height: 88vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       border-radius: 32px 32px 16px 16px;
       background: var(--surface);
       border: 1px solid var(--border);
       box-shadow: 0 2px 0 var(--border-strong), 0 20px 40px var(--shadow);
-      padding: 1.25rem;
+      padding: 1.25rem 1.25rem 1.75rem;
+    }
+
+    .sheet-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--border-strong);
+      border-radius: 2px;
+      margin: 0 auto 1.1rem;
     }
 
     .sheet-header {
@@ -226,6 +264,7 @@
       justify-content: space-between;
       gap: 1rem;
       align-items: center;
+      margin-bottom: 0.25rem;
     }
 
     .sheet-header h2 {
@@ -241,52 +280,283 @@
       font-size: 1.4rem;
       cursor: pointer;
       padding: 0.5rem;
+      min-width: 44px;
+      min-height: 44px;
+      display: grid;
+      place-items: center;
     }
 
-    .setting-block {
-      margin-top: 1.25rem;
+    /* ─── Settings sections ──────────────────────────────── */
+    .setting-section {
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .setting-section-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.05rem;
+      color: var(--ink-mid);
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.02em;
     }
 
     .setting-block label {
-      display: block;
-      margin-top: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-top: 0.75rem;
       font-size: 0.98rem;
       color: var(--ink);
       cursor: pointer;
+      min-height: 44px;
     }
 
     .setting-block input[type='radio'] {
-      margin-right: 0.8rem;
       accent-color: var(--yellow);
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
     }
 
     .setting-block .help {
-      margin-top: 0.75rem;
+      margin-top: 0.6rem;
       color: var(--ink-soft);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       line-height: 1.6;
     }
 
-    .sheet p,
-    .sheet label {
-      font-family: 'Lora', serif;
+    /* ─── Toggle switch ──────────────────────────────────── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0;
+      min-height: 44px;
     }
 
+    .toggle-row .toggle-label {
+      font-size: 0.98rem;
+      color: var(--ink);
+    }
+
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      background: var(--surface-deep);
+      border: 1.5px solid var(--border-strong);
+      transition: background 200ms, border-color 200ms;
+      cursor: pointer;
+    }
+
+    .toggle input:checked + .toggle-track {
+      background: var(--yellow);
+      border-color: var(--yellow-deep);
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 1px 4px var(--shadow-deep);
+      transition: transform 200ms;
+      pointer-events: none;
+    }
+
+    .toggle input:checked ~ .toggle-thumb {
+      transform: translateX(20px);
+    }
+
+    /* ─── Profile grid ───────────────────────────────────── */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+
+    .profile-cell {
+      padding: 0.6rem 0.8rem;
+      background: var(--surface-deep);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .profile-cell .pcell-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ink-soft);
+      margin-bottom: 0.2rem;
+    }
+
+    .profile-cell .pcell-value {
+      font-family: 'Fraunces', serif;
+      font-size: 1.05rem;
+      color: var(--ink);
+    }
+
+    /* ─── Treat-day counters ─────────────────────────────── */
+    .treat-counts {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .treat-count-pill {
+      flex: 1;
+      padding: 0.65rem 0.75rem;
+      background: var(--surface-deep);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .treat-count-pill .count-num {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .treat-count-pill .count-label {
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+      margin-top: 0.15rem;
+    }
+
+    /* ─── Collapsible ────────────────────────────────────── */
+    .collapsible-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 0.5rem 0;
+      cursor: pointer;
+      color: var(--ink-mid);
+      font-family: 'Fraunces', serif;
+      font-size: 1.05rem;
+      text-align: left;
+      min-height: 44px;
+    }
+
+    .collapsible-toggle .arrow {
+      font-size: 0.85rem;
+      transition: transform 200ms;
+    }
+
+    .collapsible-toggle[aria-expanded="true"] .arrow {
+      transform: rotate(180deg);
+    }
+
+    .collapsible-body {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 300ms ease;
+    }
+
+    .collapsible-body.open { max-height: 600px; }
+
+    .install-steps {
+      margin: 0.5rem 0 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: steps;
+    }
+
+    .install-steps li {
+      counter-increment: steps;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+
+    .install-steps li::before {
+      content: counter(steps);
+      font-family: 'Fraunces', serif;
+      font-size: 0.9rem;
+      min-width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--yellow);
+      color: var(--centre-outer);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    /* ─── Buttons ────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.4rem;
+      border-radius: 20px;
+      border: none;
+      font-family: 'Lora', serif;
+      font-size: 0.98rem;
+      cursor: pointer;
+      min-height: 44px;
+      transition: opacity 150ms;
+    }
+
+    .btn:active { opacity: 0.75; }
+
+    .btn-ghost {
+      background: var(--surface-deep);
+      color: var(--ink-mid);
+      border: 1px solid var(--border-strong);
+    }
+
+    .btn-full { width: 100%; }
+
+    /* ─── Sheet text ─────────────────────────────────────── */
+    .sheet p, .sheet label { font-family: 'Lora', serif; }
+
+    .help {
+      color: var(--ink-soft);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin: 0.4rem 0 0;
+    }
+
+    /* ─── Media queries ──────────────────────────────────── */
     @media (prefers-color-scheme: dark) {
-      :root[data-theme='sunflowers'] {
-        color-scheme: dark;
-      }
+      :root[data-theme='sunflowers'] { color-scheme: dark; }
     }
 
     @media (min-width: 640px) {
-      #app {
-        padding: 2rem 2rem 3rem;
-      }
+      #app { padding: 2rem 2rem 3rem; }
     }
   </style>
 </head>
 <body>
-  <svg width="0" height="0" aria-hidden="true">
+  <!-- Paper grain filter (single definition, referenced by #app) -->
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
     <filter id="grain">
       <feTurbulence type="fractalNoise" baseFrequency="0.92" numOctaves="3" stitchTiles="stitch" />
       <feColorMatrix type="saturate" values="0" />
@@ -300,18 +570,20 @@
         <div class="title">Bloom</div>
         <div class="subtitle">wellness tracker</div>
       </div>
-      <button id="settingsButton" aria-label="Open settings">⚙︎</button>
+      <button class="icon-btn" id="settingsButton" aria-label="Open settings">⚙︎</button>
     </header>
 
-    <main class="day-screen">
+    <main class="day-screen" id="dayScreen">
+
+      <!-- Hero / sunflower card -->
       <section class="hero-card">
         <div class="hero-copy">
-          <div class="date-line" id="todayDate">Loading...</div>
-          <p>A quiet page for today’s habits and sunshine.</p>
+          <div class="date-line" id="todayDate">Loading…</div>
+          <p>A quiet page for today's habits and sunshine.</p>
         </div>
 
         <div class="sunflower-hero" aria-hidden="true">
-          <svg viewBox="0 0 320 360" role="img" aria-label="Sunflower placeholder">
+          <svg viewBox="0 0 320 360" role="img" aria-label="Sunflower">
             <defs>
               <radialGradient id="petalGlow" cx="50%" cy="20%" r="70%">
                 <stop offset="0%" stop-color="var(--yellow-highlight)"/>
@@ -335,86 +607,390 @@
         </div>
       </section>
 
+      <!-- Meal log stub -->
+      <section class="stub-card" id="mealSection">
+        <strong>Meals</strong>
+        Nothing logged yet — coming in Stage 2.
+      </section>
+
+      <!-- Water stub -->
+      <section class="stub-card" id="waterSection">
+        <strong>Water</strong>
+        Tap-to-fill cups coming in Stage 3.
+      </section>
+
+      <!-- Meds stub -->
+      <section class="stub-card" id="medsSection">
+        <strong>Meds</strong>
+        One-tap meds button coming in Stage 3.
+      </section>
+
+      <!-- Symptom stub — hidden until feature flag on -->
+      <section class="stub-card" id="symptomsSection" style="display:none">
+        <strong>Symptoms</strong>
+        Optional symptom logging coming in Stage 6.
+      </section>
+
+      <!-- Steps stub — hidden until feature flag on -->
+      <section class="stub-card" id="stepsSection" style="display:none">
+        <strong>Steps</strong>
+        Steps logging coming in Stage 6.
+      </section>
+
       <section class="placeholder-note">
-        <p>Tap the cog to switch themes and make the day feel just right.</p>
+        <p>Tap the cog to customise your experience.</p>
       </section>
     </main>
   </div>
 
+  <!-- Sheet backdrop -->
   <div class="sheet-backdrop" id="sheetBackdrop"></div>
-  <div class="sheet" id="settingsSheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+
+  <!-- Settings sheet -->
+  <div class="sheet" id="settingsSheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" tabindex="-1">
     <div class="sheet-panel">
+      <div class="sheet-handle"></div>
+
       <div class="sheet-header">
         <h2 id="settingsTitle">Settings</h2>
         <button id="closeSettings" aria-label="Close settings">✕</button>
       </div>
-      <div class="setting-block">
-        <div class="setting-label">Theme</div>
-        <label><input type="radio" name="theme" value="auto" /> Auto</label>
-        <label><input type="radio" name="theme" value="sunflowers" /> Sunflowers</label>
-        <label><input type="radio" name="theme" value="starry" /> Starry Night</label>
-        <p class="help">Auto follows your device preference, or choose a mood.</p>
+
+      <!-- ── Theme ── -->
+      <div class="setting-section" style="border-top:none;padding-top:0.5rem">
+        <div class="setting-section-title">Theme</div>
+        <div class="setting-block">
+          <label><input type="radio" name="theme" value="auto" /> Auto (follows device)</label>
+          <label><input type="radio" name="theme" value="sunflowers" /> Sunflowers</label>
+          <label><input type="radio" name="theme" value="starry" /> Starry Night</label>
+          <p class="help">Auto follows your device preference. Sunflowers is warm cream by day; Starry Night is a deep indigo canvas.</p>
+        </div>
       </div>
+
+      <!-- ── Optional features ── -->
+      <div class="setting-section">
+        <div class="setting-section-title">Optional features</div>
+
+        <div class="toggle-row">
+          <span class="toggle-label">Symptom log</span>
+          <label class="toggle" aria-label="Toggle symptom log">
+            <input type="checkbox" id="featureSymptoms" />
+            <span class="toggle-track"></span>
+            <span class="toggle-thumb"></span>
+          </label>
+        </div>
+        <p class="help">Back pain, urine colour, and dip notes — useful for nephrology check-ins.</p>
+
+        <div class="toggle-row" style="margin-top:0.75rem">
+          <span class="toggle-label">Steps log</span>
+          <label class="toggle" aria-label="Toggle steps log">
+            <input type="checkbox" id="featureSteps" />
+            <span class="toggle-track"></span>
+            <span class="toggle-thumb"></span>
+          </label>
+        </div>
+        <p class="help">A simple daily step count — no targets, no pressure.</p>
+      </div>
+
+      <!-- ── Treat days ── -->
+      <div class="setting-section">
+        <div class="setting-section-title">Treat days</div>
+        <p class="help" style="margin-top:0">Long-press the date on the day screen to mark any day as a treat day. Streaks pause gracefully over treat days.</p>
+        <div class="treat-counts">
+          <div class="treat-count-pill">
+            <div class="count-num" id="treatCount7">—</div>
+            <div class="count-label">last 7 days</div>
+          </div>
+          <div class="treat-count-pill">
+            <div class="count-num" id="treatCount30">—</div>
+            <div class="count-label">last 30 days</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Profile & targets ── -->
+      <div class="setting-section">
+        <div class="setting-section-title">Profile &amp; targets</div>
+        <div class="profile-grid" id="profileGrid">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <!-- ── Export ── -->
+      <div class="setting-section">
+        <div class="setting-section-title">Your data</div>
+        <button class="btn btn-ghost btn-full" id="exportBtn">Export all data (JSON)</button>
+        <p class="help" style="margin-top:0.5rem">Exports a single file with every logged day — suitable for sharing with your medical team. Photos are not included.</p>
+      </div>
+
+      <!-- ── Install instructions ── -->
+      <div class="setting-section">
+        <button class="collapsible-toggle" id="installToggle" aria-expanded="false" aria-controls="installBody">
+          <span>Add to Home Screen</span>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="collapsible-body" id="installBody" role="region">
+          <ol class="install-steps">
+            <li>Open Bloom in <strong>Safari</strong> on your iPhone.</li>
+            <li>Tap the <strong>Share</strong> button (the box with an arrow at the bottom of the screen).</li>
+            <li>Scroll down and tap <strong>"Add to Home Screen"</strong>.</li>
+            <li>Tap <strong>Add</strong> in the top-right corner.</li>
+            <li>Bloom will appear on your home screen and open full-screen, like a native app.</li>
+          </ol>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = 'bloom_settings_v1';
-    const defaultSettings = { version: 1, theme: 'auto' };
+    /* ─────────────────────────────────────────────────────────────
+     * Data shapes (reference — full shapes used across all stages)
+     * ─────────────────────────────────────────────────────────────
+     *
+     * bloom_settings_v1
+     * {
+     *   version: 1,
+     *   theme: "auto" | "sunflowers" | "starry",
+     *   features: { symptoms: false, steps: false },
+     *   targets: {
+     *     calories:  { max: 1900 },
+     *     protein_g: { max: 85   },
+     *     salt_g:    { max: 5    },
+     *     water_ml:  { min: 2000 }
+     *   },
+     *   profile: { name: "", age: 32, weight_kg: 85.7, height_cm: 170.18 }
+     * }
+     *
+     * bloom_day_v1_YYYY-MM-DD
+     * {
+     *   date: "YYYY-MM-DD",
+     *   isTreatDay: false,
+     *   meals: [
+     *     {
+     *       id: "m_<timestamp>",
+     *       time: "12:34",
+     *       type: "home" | "processed" | "restaurant",
+     *       description: "",
+     *       photoId: "p_<id>" | null,
+     *       estimates: { calories: 0, protein_g: 0, salt_g: 0 },
+     *       aiMessage: ""
+     *     }
+     *   ],
+     *   water_ml: 0,
+     *   meds_taken: false,
+     *   bp: [{ time: "08:00", systolic: 0, diastolic: 0 }],
+     *   mood: { face: 0, words: [] },
+     *   steps: null,
+     *   symptoms: { back_pain: null, urine_colour: null, urine_dip: null },
+     *   petal_bloom: { calories: 0, protein: 0, salt: 0 }
+     *   // water petal always derived live: clamp(water_ml / 2000, 0, 1)
+     * }
+     *
+     * bloom_streaks_v1  — derived on demand from day records, not stored as counters
+     * { version: 1 }
+     *
+     * bloom_meta_v1
+     * { installed: "YYYY-MM-DD", lastMigration: 1 }
+     *
+     * bloom_photo_<id>  — base64 JPEG string stored separately
+     */
 
-    const appRoot = document.documentElement;
-    const todayDate = document.getElementById('todayDate');
-    const settingsButton = document.getElementById('settingsButton');
-    const closeSettings = document.getElementById('closeSettings');
-    const settingsSheet = document.getElementById('settingsSheet');
-    const sheetBackdrop = document.getElementById('sheetBackdrop');
-    const themeInputs = document.querySelectorAll('input[name="theme"]');
+    /* ─── Storage keys ───────────────────────────────────── */
+    const STORAGE = {
+      settings: 'bloom_settings_v1',
+      meta:     'bloom_meta_v1',
+      streaks:  'bloom_streaks_v1',
+      day:      date => `bloom_day_v1_${date}`,
+      photo:    id   => `bloom_photo_${id}`,
+    };
+
+    /* ─── Defaults ───────────────────────────────────────── */
+    const DEFAULT_SETTINGS = {
+      version: 1,
+      theme: 'auto',
+      features: { symptoms: false, steps: false },
+      targets: {
+        calories:  { max: 1900 },
+        protein_g: { max: 85   },
+        salt_g:    { max: 5    },
+        water_ml:  { min: 2000 }
+      },
+      profile: { name: '', age: 32, weight_kg: 85.7, height_cm: 170.18 }
+    };
+
+    /* ─── Date helpers ───────────────────────────────────── */
+    function isoToday() {
+      const d = new Date();
+      return [
+        d.getFullYear(),
+        String(d.getMonth() + 1).padStart(2, '0'),
+        String(d.getDate()).padStart(2, '0')
+      ].join('-');
+    }
+
+    function isoDateMinus(n) {
+      const d = new Date();
+      d.setDate(d.getDate() - n);
+      return [
+        d.getFullYear(),
+        String(d.getMonth() + 1).padStart(2, '0'),
+        String(d.getDate()).padStart(2, '0')
+      ].join('-');
+    }
 
     function formatToday() {
-      const now = new Date();
-      return now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
-    }
-
-    function loadSettings() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return { ...defaultSettings };
-        const parsed = JSON.parse(raw);
-        if (!parsed || typeof parsed !== 'object') return { ...defaultSettings };
-        return { ...defaultSettings, ...parsed };
-      } catch (err) {
-        console.warn('Failed to load settings', err);
-        return { ...defaultSettings };
-      }
-    }
-
-    function saveSettings(settings) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    }
-
-    function currentSystemTheme() {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'starry' : 'sunflowers';
-    }
-
-    function applyTheme(theme) {
-      const selected = theme === 'auto' ? currentSystemTheme() : theme;
-      appRoot.setAttribute('data-theme', selected);
-      if (selected === 'starry') {
-        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#08122E');
-      } else {
-        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F7EDD8');
-      }
-    }
-
-    function populateThemeInputs(theme) {
-      themeInputs.forEach(input => {
-        input.checked = input.value === theme;
+      return new Date().toLocaleDateString(undefined, {
+        weekday: 'long', month: 'long', day: 'numeric'
       });
     }
 
+    /* ─── Storage helpers ────────────────────────────────── */
+    function lsGet(key, fallback = null) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw === null) return fallback;
+        return JSON.parse(raw);
+      } catch { return fallback; }
+    }
+
+    function lsSet(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); }
+      catch (e) { console.warn('localStorage write failed', e); }
+    }
+
+    /* ─── Deep merge (base ← override, both plain objects) ─ */
+    function deepMerge(base, override) {
+      const out = { ...base };
+      for (const key of Object.keys(override)) {
+        if (
+          override[key] !== null &&
+          typeof override[key] === 'object' &&
+          !Array.isArray(override[key]) &&
+          base[key] !== null &&
+          typeof base[key] === 'object' &&
+          !Array.isArray(base[key])
+        ) {
+          out[key] = deepMerge(base[key], override[key]);
+        } else {
+          out[key] = override[key];
+        }
+      }
+      return out;
+    }
+
+    /* ─── Migration ──────────────────────────────────────── */
+    function runMigrations() {
+      let meta = lsGet(STORAGE.meta, null);
+      if (!meta) {
+        meta = { installed: isoToday(), lastMigration: 1 };
+        lsSet(STORAGE.meta, meta);
+      }
+      // Future migration steps go here, guarded by meta.lastMigration version
+      lsSet(STORAGE.meta, meta);
+    }
+
+    /* ─── Settings ───────────────────────────────────────── */
+    function loadSettings() {
+      const stored = lsGet(STORAGE.settings, {});
+      return deepMerge(DEFAULT_SETTINGS, stored);
+    }
+
+    function saveSettings(s) {
+      lsSet(STORAGE.settings, s);
+    }
+
+    /* ─── Day record ─────────────────────────────────────── */
+    function loadDay(date) {
+      return lsGet(STORAGE.day(date), {
+        date,
+        isTreatDay: false,
+        meals: [],
+        water_ml: 0,
+        meds_taken: false,
+        bp: [],
+        mood: { face: 0, words: [] },
+        steps: null,
+        symptoms: { back_pain: null, urine_colour: null, urine_dip: null },
+        petal_bloom: { calories: 0, protein: 0, salt: 0 }
+      });
+    }
+
+    function saveDay(day) {
+      lsSet(STORAGE.day(day.date), day);
+    }
+
+    /* ─── Treat-day counters ─────────────────────────────── */
+    function countTreatDays(windowDays) {
+      let count = 0;
+      for (let i = 0; i < windowDays; i++) {
+        const rec = lsGet(STORAGE.day(isoDateMinus(i)), null);
+        if (rec && rec.isTreatDay) count++;
+      }
+      return count;
+    }
+
+    /* ─── Theme ──────────────────────────────────────────── */
+    const appRoot = document.documentElement;
+
+    function currentSystemTheme() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'starry' : 'sunflowers';
+    }
+
+    function applyTheme(theme) {
+      const resolved = theme === 'auto' ? currentSystemTheme() : theme;
+      appRoot.setAttribute('data-theme', resolved);
+      document.querySelector('meta[name="theme-color"]')
+        .setAttribute('content', resolved === 'starry' ? '#08122E' : '#F7EDD8');
+    }
+
+    /* ─── Feature flags ──────────────────────────────────── */
+    function applyFeatureFlags(features) {
+      document.getElementById('symptomsSection').style.display =
+        features.symptoms ? '' : 'none';
+      document.getElementById('stepsSection').style.display =
+        features.steps ? '' : 'none';
+    }
+
+    /* ─── Profile card ───────────────────────────────────── */
+    function renderProfile(settings) {
+      const { profile: p, targets: t } = settings;
+      const cells = [
+        ['Age',      `${p.age} yrs`],
+        ['Weight',   `${p.weight_kg} kg`],
+        ['Height',   `${p.height_cm} cm`],
+        ['Calories', `≤ ${t.calories.max} kcal`],
+        ['Protein',  `≤ ${t.protein_g.max} g`],
+        ['Salt',     `≤ ${t.salt_g.max} g`],
+        ['Water',    `≥ ${t.water_ml.min / 1000} L`],
+      ];
+      document.getElementById('profileGrid').innerHTML = cells.map(([label, value]) => `
+        <div class="profile-cell">
+          <div class="pcell-label">${label}</div>
+          <div class="pcell-value">${value}</div>
+        </div>
+      `).join('');
+    }
+
+    /* ─── Settings sheet ─────────────────────────────────── */
+    const settingsSheet = document.getElementById('settingsSheet');
+    const sheetBackdrop = document.getElementById('sheetBackdrop');
+    const themeInputs   = document.querySelectorAll('input[name="theme"]');
+    const featSymptoms  = document.getElementById('featureSymptoms');
+    const featSteps     = document.getElementById('featureSteps');
+
     function openSettings() {
+      const s = loadSettings();
+      themeInputs.forEach(i => { i.checked = i.value === s.theme; });
+      featSymptoms.checked = !!s.features.symptoms;
+      featSteps.checked    = !!s.features.steps;
+      document.getElementById('treatCount7').textContent  = countTreatDays(7);
+      document.getElementById('treatCount30').textContent = countTreatDays(30);
+      renderProfile(s);
       settingsSheet.classList.add('active');
       sheetBackdrop.classList.add('active');
+      settingsSheet.focus();
     }
 
     function closeSettingsSheet() {
@@ -422,47 +998,71 @@
       sheetBackdrop.classList.remove('active');
     }
 
-    function initTheme() {
-      const settings = loadSettings();
-      applyTheme(settings.theme);
-      populateThemeInputs(settings.theme);
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        const stored = loadSettings();
-        if (stored.theme === 'auto') applyTheme('auto');
-      });
-    }
-
-    settingsButton.addEventListener('click', openSettings);
-    closeSettings.addEventListener('click', closeSettingsSheet);
+    document.getElementById('settingsButton').addEventListener('click', openSettings);
+    document.getElementById('closeSettings').addEventListener('click', closeSettingsSheet);
     sheetBackdrop.addEventListener('click', closeSettingsSheet);
 
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && settingsSheet.classList.contains('active'))
+        closeSettingsSheet();
+    });
+
     themeInputs.forEach(input => {
-      input.addEventListener('change', event => {
-        const theme = event.target.value;
-        const settings = loadSettings();
-        settings.theme = theme;
-        saveSettings(settings);
-        applyTheme(theme);
+      input.addEventListener('change', e => {
+        const s = loadSettings();
+        s.theme = e.target.value;
+        saveSettings(s);
+        applyTheme(s.theme);
       });
     });
 
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && settingsSheet.classList.contains('active')) {
-        closeSettingsSheet();
-      }
+    featSymptoms.addEventListener('change', e => {
+      const s = loadSettings();
+      s.features.symptoms = e.target.checked;
+      saveSettings(s);
+      applyFeatureFlags(s.features);
     });
 
+    featSteps.addEventListener('change', e => {
+      const s = loadSettings();
+      s.features.steps = e.target.checked;
+      saveSettings(s);
+      applyFeatureFlags(s.features);
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      alert('Export coming in Stage 7 — your data is safely stored locally until then.');
+    });
+
+    const installToggle = document.getElementById('installToggle');
+    const installBody   = document.getElementById('installBody');
+    installToggle.addEventListener('click', () => {
+      const open = installBody.classList.toggle('open');
+      installToggle.setAttribute('aria-expanded', String(open));
+    });
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (loadSettings().theme === 'auto') applyTheme('auto');
+    });
+
+    /* ─── Service worker ─────────────────────────────────── */
     function registerServiceWorker() {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').catch(err => {
-          console.warn('Service worker failed to register', err);
+          console.warn('SW registration failed', err);
         });
       }
     }
 
-    todayDate.textContent = formatToday();
-    initTheme();
-    registerServiceWorker();
+    /* ─── Boot ───────────────────────────────────────────── */
+    (function init() {
+      runMigrations();
+      const s = loadSettings();
+      applyTheme(s.theme);
+      applyFeatureFlags(s.features);
+      document.getElementById('todayDate').textContent = formatToday();
+      registerServiceWorker();
+    })();
   </script>
 </body>
 </html>
