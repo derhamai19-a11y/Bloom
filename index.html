@@ -1527,8 +1527,12 @@
 
       <div class="setting-section">
         <div class="setting-section-title">Your data</div>
-        <button class="btn btn-ghost btn-full" id="exportBtn">Export all data (JSON)</button>
-        <p class="help" style="margin-top:0.5rem">Exports every logged day — suitable to share with your medical team. Photos not included.</p>
+        <button class="btn btn-ghost btn-full" id="exportBtn">⬆ Backup data (JSON)</button>
+        <p class="help" style="margin-top:0.5rem">Saves every logged day to a JSON file. Keep a copy somewhere safe — iCloud, email, etc. Photos not included.</p>
+        <button class="btn btn-ghost btn-full" id="importBtn" style="margin-top:0.65rem">⬇ Restore from backup</button>
+        <input type="file" id="importFileInput" accept="application/json,.json" style="display:none" aria-hidden="true" />
+        <div id="importStatus" style="margin-top:0.5rem;font-size:0.88rem;text-align:center;display:none"></div>
+        <p class="help" style="margin-top:0.5rem">Merges a backup file into your current data. Existing days are kept; imported days fill any gaps. Your connection settings are not overwritten.</p>
       </div>
 
       <div class="setting-section">
@@ -2311,10 +2315,10 @@
         days,
       };
       const json     = JSON.stringify(payload, null, 2);
-      const filename = `bloom-export-${isoToday()}.json`;
+      const filename = `bloom-backup-${isoToday()}.json`;
       const file     = new File([json], filename, { type: 'application/json' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try { await navigator.share({ files: [file], title: 'Bloom export' }); return; }
+        try { await navigator.share({ files: [file], title: 'Bloom backup' }); return; }
         catch { /* fallback to download */ }
       }
       const url  = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
@@ -2323,6 +2327,71 @@
       link.download = filename;
       link.click();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
+    });
+
+    /* ── Import ── */
+    document.getElementById('importBtn').addEventListener('click', () => {
+      document.getElementById('importFileInput').value = '';
+      document.getElementById('importFileInput').click();
+    });
+
+    document.getElementById('importFileInput').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById('importStatus');
+      statusEl.style.display = 'block';
+      statusEl.style.color   = 'var(--ink-soft)';
+      statusEl.textContent   = 'Reading file…';
+
+      const reader = new FileReader();
+      reader.onload = ev => {
+        let data;
+        try {
+          data = JSON.parse(ev.target.result);
+        } catch {
+          statusEl.style.color = 'var(--ochre)';
+          statusEl.textContent = '✕ File couldn\'t be read — is it a valid Bloom backup?';
+          return;
+        }
+
+        if (data.app !== 'Bloom' || !Array.isArray(data.days)) {
+          statusEl.style.color = 'var(--ochre)';
+          statusEl.textContent = '✕ This doesn\'t look like a Bloom backup file.';
+          return;
+        }
+
+        let imported = 0, skipped = 0;
+        for (const day of data.days) {
+          if (!day.date) continue;
+          const existing = lsGet(STORAGE.day(day.date), null);
+          if (existing) {
+            skipped++;
+          } else {
+            lsSet(STORAGE.day(day.date), day);
+            imported++;
+          }
+        }
+
+        // Refresh today's view in case today was imported
+        const today = loadDay(isoToday());
+        renderMealList(today);
+        renderWater(today);
+        renderMeds(today);
+        renderBP(today);
+        renderMood(today);
+        renderStreak(today);
+        renderSymptoms(today);
+        renderSteps(today);
+        updateSunflowerSVG(today);
+
+        statusEl.style.color = 'var(--sage)';
+        statusEl.textContent = `✓ Imported ${imported} day${imported !== 1 ? 's' : ''}${skipped ? `, ${skipped} already present and kept` : ''}.`;
+      };
+      reader.onerror = () => {
+        statusEl.style.color = 'var(--ochre)';
+        statusEl.textContent = '✕ Could not read the file.';
+      };
+      reader.readAsText(file);
     });
 
     const installToggle = document.getElementById('installToggle');
