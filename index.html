@@ -1086,6 +1086,143 @@
         radial-gradient(circle at 80% 20%, rgba(240,188,24,0.08) 0%, transparent 50%);
     }
 
+    /* ─── Meal mode tabs ─────────────────────────────────────── */
+    .meal-mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.4rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .meal-mode-tab {
+      padding: 0.5rem 0.4rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface-deep);
+      color: var(--ink-mid);
+      font-family: 'Lora', serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 150ms, background 150ms, color 150ms;
+      line-height: 1.3;
+      min-height: 44px;
+      display: grid;
+      place-items: center;
+    }
+
+    .meal-mode-tab.active {
+      border-color: var(--yellow-deep);
+      background: var(--yellow-highlight);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* ─── Manual entry numbers ──────────────────────────────── */
+    .manual-nums {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .manual-num-field { display: grid; gap: 0.25rem; }
+
+    .manual-num-field .form-label { margin-bottom: 0; }
+
+    .form-input-num {
+      width: 100%;
+      padding: 0.6rem 0.5rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface-deep);
+      color: var(--ink);
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      text-align: center;
+      outline: none;
+      transition: border-color 200ms;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .form-input-num:focus { border-color: var(--yellow-deep); }
+
+    /* ─── Saved / recent list ───────────────────────────────── */
+    .saved-list {
+      margin-top: 0.5rem;
+      display: grid;
+      gap: 0.5rem;
+      max-height: 55vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .saved-section-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ink-soft);
+      margin: 0.3rem 0 0.1rem;
+      padding-left: 0.2rem;
+    }
+
+    .saved-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: 16px;
+      background: var(--surface-deep);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: border-color 150ms, background 150ms;
+      min-height: 52px;
+    }
+
+    .saved-item:active {
+      border-color: var(--yellow-deep);
+      background: var(--yellow-highlight);
+    }
+
+    .saved-item-text {
+      flex: 1;
+      font-size: 0.92rem;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+
+    .saved-item-nums {
+      font-size: 0.75rem;
+      color: var(--ink-soft);
+      margin-top: 0.15rem;
+    }
+
+    .saved-item-star {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.15rem;
+      padding: 0.25rem;
+      min-width: 36px;
+      min-height: 36px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      color: var(--ink-soft);
+      transition: color 150ms;
+    }
+
+    .saved-item-star.starred { color: var(--yellow-deep); }
+
+    .saved-empty {
+      text-align: center;
+      color: var(--ink-soft);
+      font-style: italic;
+      font-size: 0.92rem;
+      padding: 1rem 0 0.5rem;
+    }
+
     /* ─── Media queries ──────────────────────────────────────── */
     @media (prefers-color-scheme: dark) {
       :root[data-theme='sunflowers'] { color-scheme: dark; }
@@ -1220,48 +1357,91 @@
         <button id="closeMealSheet" aria-label="Close">✕</button>
       </div>
 
-      <!-- Photo picker -->
-      <div class="photo-area" id="photoArea">
-        <div class="photo-preview" id="photoPreview" style="display:none">
-          <img id="photoThumb" alt="Meal photo preview" />
-          <button class="photo-clear" id="photoClear" aria-label="Remove photo">✕</button>
+      <!-- Mode tabs -->
+      <div class="meal-mode-tabs" style="margin-top:0.5rem">
+        <button class="meal-mode-tab active" data-mode="ai" id="modeTabAI">✨ AI estimate</button>
+        <button class="meal-mode-tab" data-mode="manual" id="modeTabManual">✏️ Manual</button>
+        <button class="meal-mode-tab" data-mode="saved" id="modeTabSaved">⭐ Saved</button>
+      </div>
+
+      <!-- ── AI panel ── -->
+      <div id="mealPanelAI">
+        <!-- Photo picker -->
+        <div class="photo-area" id="photoArea">
+          <div class="photo-preview" id="photoPreview" style="display:none">
+            <img id="photoThumb" alt="Meal photo preview" />
+            <button class="photo-clear" id="photoClear" aria-label="Remove photo">✕</button>
+          </div>
+          <div class="photo-pick-row" id="photoPickRow">
+            <button class="photo-pick-btn" id="photoCameraBtn">📷 Camera</button>
+            <button class="photo-pick-btn" id="photoLibraryBtn">🖼 Library</button>
+          </div>
+          <input type="file" id="photoCameraInput" accept="image/*" capture="environment" style="display:none" aria-hidden="true" />
+          <input type="file" id="photoLibraryInput" accept="image/*" style="display:none" aria-hidden="true" />
         </div>
-        <div class="photo-pick-row" id="photoPickRow">
-          <button class="photo-pick-btn" id="photoCameraBtn">📷 Camera</button>
-          <button class="photo-pick-btn" id="photoLibraryBtn">🖼 Library</button>
+
+        <div class="form-field">
+          <label class="form-label" for="mealDescription">What did you have?</label>
+          <textarea id="mealDescription" class="form-textarea" rows="3"
+            placeholder="e.g. Poached eggs on wholemeal toast with spinach"></textarea>
         </div>
-        <input type="file" id="photoCameraInput" accept="image/*" capture="environment" style="display:none" aria-hidden="true" />
-        <input type="file" id="photoLibraryInput" accept="image/*" style="display:none" aria-hidden="true" />
+
+        <div class="form-field">
+          <label class="form-label" for="mealType">Meal type</label>
+          <select id="mealType" class="form-select">
+            <option value="home">Home-cooked</option>
+            <option value="processed">Packaged / processed</option>
+            <option value="restaurant">Restaurant / café</option>
+          </select>
+        </div>
+
+        <div class="meal-error-msg" id="mealErrorMsg" style="display:none"></div>
+        <button class="btn btn-primary btn-full" id="mealSubmitBtn" style="margin-top:1.1rem">Save meal</button>
       </div>
 
-      <!-- Description -->
-      <div class="form-field">
-        <label class="form-label" for="mealDescription">What did you have?</label>
-        <textarea
-          id="mealDescription"
-          class="form-textarea"
-          rows="3"
-          placeholder="e.g. Poached eggs on wholemeal toast with spinach"
-        ></textarea>
+      <!-- ── Manual panel ── -->
+      <div id="mealPanelManual" style="display:none">
+        <div class="form-field">
+          <label class="form-label" for="manualDescription">What did you have?</label>
+          <textarea id="manualDescription" class="form-textarea" rows="3"
+            placeholder="e.g. Coco Pops 30g with semi-skimmed milk"></textarea>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="manualType">Meal type</label>
+          <select id="manualType" class="form-select">
+            <option value="home">Home-cooked</option>
+            <option value="processed">Packaged / processed</option>
+            <option value="restaurant">Restaurant / café</option>
+          </select>
+        </div>
+
+        <div class="manual-nums">
+          <div class="manual-num-field">
+            <label class="form-label" for="manualKcal">kcal</label>
+            <input type="number" id="manualKcal" class="form-input-num" inputmode="numeric" min="0" max="9999" placeholder="0" />
+          </div>
+          <div class="manual-num-field">
+            <label class="form-label" for="manualProtein">protein g</label>
+            <input type="number" id="manualProtein" class="form-input-num" inputmode="decimal" min="0" max="999" step="0.1" placeholder="0" />
+          </div>
+          <div class="manual-num-field">
+            <label class="form-label" for="manualSalt">salt g</label>
+            <input type="number" id="manualSalt" class="form-input-num" inputmode="decimal" min="0" max="99" step="0.1" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="meal-error-msg" id="manualErrorMsg" style="display:none"></div>
+        <button class="btn btn-primary btn-full" id="manualSubmitBtn" style="margin-top:1.1rem">Save meal</button>
       </div>
 
-      <!-- Type -->
-      <div class="form-field">
-        <label class="form-label" for="mealType">Meal type</label>
-        <select id="mealType" class="form-select">
-          <option value="home">Home-cooked</option>
-          <option value="processed">Packaged / processed</option>
-          <option value="restaurant">Restaurant / café</option>
-        </select>
+      <!-- ── Saved / Recent panel ── -->
+      <div id="mealPanelSaved" style="display:none">
+        <div class="saved-list" id="savedList">
+          <!-- populated by JS -->
+        </div>
       </div>
 
-      <!-- Error -->
-      <div class="meal-error-msg" id="mealErrorMsg" style="display:none"></div>
-
-      <!-- Submit -->
-      <button class="btn btn-primary btn-full" id="mealSubmitBtn" style="margin-top:1.1rem">
-        Save meal
-      </button>
     </div>
   </div>
 
@@ -1432,7 +1612,9 @@
      */
 
     /* ─── Worker config ──────────────────────────────────── */
-    // QUESTION: Replace with your deployed Cloudflare Worker URL and token
+    // ⚠️  REQUIRED: Replace both values below with your actual Cloudflare Worker
+    //     URL and shared token, otherwise AI estimation will never work.
+    //     The AI tab will show an error; use Manual entry as a fallback.
     const WORKER_URL   = 'https://bloom-worker.YOURSUBDOMAIN.workers.dev';
     const WORKER_TOKEN = 'REPLACE_WITH_YOUR_X_APP_TOKEN';
 
@@ -1685,9 +1867,10 @@
     /* ─── Meal sheet state ───────────────────────────────── */
     let currentPhotoFile = null;
     let mealSheetOpen = false;
+    let currentMealMode = 'ai'; // 'ai' | 'manual' | 'saved'
 
-    const mealSheet     = document.getElementById('mealSheet');
-    const sheetBackdrop = document.getElementById('sheetBackdrop');
+    const mealSheet       = document.getElementById('mealSheet');
+    const sheetBackdrop   = document.getElementById('sheetBackdrop');
     const mealDescription = document.getElementById('mealDescription');
     const mealType        = document.getElementById('mealType');
     const mealSubmitBtn   = document.getElementById('mealSubmitBtn');
@@ -1701,10 +1884,36 @@
     const photoThumb        = document.getElementById('photoThumb');
     const photoClear        = document.getElementById('photoClear');
 
-    function openMealSheet() {
+    /* ── Mode switching ── */
+    function setMealMode(mode) {
+      currentMealMode = mode;
+      document.querySelectorAll('.meal-mode-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+      document.getElementById('mealPanelAI').style.display     = mode === 'ai'     ? '' : 'none';
+      document.getElementById('mealPanelManual').style.display = mode === 'manual' ? '' : 'none';
+      document.getElementById('mealPanelSaved').style.display  = mode === 'saved'  ? '' : 'none';
+      if (mode === 'saved') renderSavedList();
+    }
+
+    document.querySelectorAll('.meal-mode-tab').forEach(btn => {
+      btn.addEventListener('click', () => setMealMode(btn.dataset.mode));
+    });
+
+    function openMealSheet(prefill) {
       mealSheetOpen = true;
       mealSheet.classList.add('active');
       sheetBackdrop.classList.add('active');
+      if (prefill) {
+        setMealMode('manual');
+        document.getElementById('manualDescription').value = prefill.description || '';
+        document.getElementById('manualType').value        = prefill.type || 'home';
+        document.getElementById('manualKcal').value        = prefill.estimates?.calories  || '';
+        document.getElementById('manualProtein').value     = prefill.estimates?.protein_g || '';
+        document.getElementById('manualSalt').value        = prefill.estimates?.salt_g    || '';
+      } else {
+        setMealMode('ai');
+      }
       mealSheet.focus();
     }
 
@@ -1724,6 +1933,12 @@
       photoPreview.style.display = 'none';
       photoPickRow.style.display = 'grid';
       mealErrorMsg.style.display = 'none';
+      document.getElementById('manualDescription').value = '';
+      document.getElementById('manualType').value = 'home';
+      document.getElementById('manualKcal').value = '';
+      document.getElementById('manualProtein').value = '';
+      document.getElementById('manualSalt').value = '';
+      document.getElementById('manualErrorMsg').style.display = 'none';
       setSubmitLoading(false);
     }
 
@@ -1763,20 +1978,17 @@
       photoPickRow.style.display = 'grid';
     });
 
-    /* Submit */
+    /* ── AI submit ── */
     mealSubmitBtn.addEventListener('click', async () => {
       const description = mealDescription.value.trim();
-      if (!description) {
-        mealDescription.focus();
-        return;
-      }
+      if (!description) { mealDescription.focus(); return; }
 
       mealErrorMsg.style.display = 'none';
       setSubmitLoading(true);
 
-      const type = mealType.value;
+      const type  = mealType.value;
       const today = isoToday();
-      const day = loadDay(today);
+      const day   = loadDay(today);
 
       const payload = { description, type };
       let photoId = null;
@@ -1787,9 +1999,7 @@
           photoId = `p_${Date.now()}`;
           lsSet(STORAGE.photo(photoId), b64);
           payload.imageBase64 = b64;
-        } catch {
-          // Photo failed to compress — continue without it
-        }
+        } catch { /* continue without photo */ }
       }
 
       let result;
@@ -1797,7 +2007,7 @@
         result = await callWorker(payload);
       } catch {
         setSubmitLoading(false);
-        showMealError("Couldn't read that one just now — tap Save meal to try again.");
+        showMealError("Couldn't reach the AI just now — tap Save meal to retry, or switch to Manual.");
         return;
       }
 
@@ -1818,17 +2028,143 @@
       day.meals.push(meal);
       recomputePetalBloom(day);
       saveDay(day);
-
       haptic(10);
       closeMealSheet();
       renderMealList(day);
       updateSunflowerSVG(day);
     });
 
-    /* Hide error when user types */
     mealDescription.addEventListener('input', () => { mealErrorMsg.style.display = 'none'; });
 
-    document.getElementById('addMealBtn').addEventListener('click', openMealSheet);
+    /* ── Manual submit ── */
+    document.getElementById('manualSubmitBtn').addEventListener('click', () => {
+      const description = document.getElementById('manualDescription').value.trim();
+      if (!description) { document.getElementById('manualDescription').focus(); return; }
+
+      const type      = document.getElementById('manualType').value;
+      const calories  = Math.round(Number(document.getElementById('manualKcal').value)     || 0);
+      const protein_g = Math.round((Number(document.getElementById('manualProtein').value) || 0) * 10) / 10;
+      const salt_g    = Math.round((Number(document.getElementById('manualSalt').value)    || 0) * 10) / 10;
+
+      const today = isoToday();
+      const day   = loadDay(today);
+
+      const meal = {
+        id: `m_${Date.now()}`,
+        time: formatTime(),
+        type,
+        description,
+        photoId: null,
+        estimates: { calories, protein_g, salt_g },
+        aiMessage: null,
+      };
+
+      day.meals.push(meal);
+      recomputePetalBloom(day);
+      saveDay(day);
+      haptic(10);
+      closeMealSheet();
+      renderMealList(day);
+      updateSunflowerSVG(day);
+    });
+
+    /* ── Saved / recent panel ── */
+    const REGULARS_KEY = 'bloom_regulars_v1';
+
+    function loadRegulars() { return lsGet(REGULARS_KEY, []); }
+    function saveRegulars(list) { lsSet(REGULARS_KEY, list); }
+
+    function getRecentMeals() {
+      const seen = new Set();
+      const results = [];
+      for (let i = 0; i <= 30; i++) {
+        const rec = lsGet(STORAGE.day(isoDateMinus(i)), null);
+        if (!rec?.meals?.length) continue;
+        for (let j = rec.meals.length - 1; j >= 0; j--) {
+          const m = rec.meals[j];
+          const key = m.description.toLowerCase().trim();
+          if (!seen.has(key)) {
+            seen.add(key);
+            results.push({ description: m.description, type: m.type, estimates: m.estimates });
+          }
+        }
+      }
+      return results.slice(0, 20);
+    }
+
+    function renderSavedList() {
+      const container = document.getElementById('savedList');
+      const regulars  = loadRegulars();
+      const recent    = getRecentMeals();
+      const regularKeys = new Set(regulars.map(r => r.description.toLowerCase().trim()));
+
+      function makeItem(item, isStarred) {
+        const key = item.description.toLowerCase().trim();
+        const e   = item.estimates || {};
+        const nums = [
+          e.calories  ? `${e.calories} kcal`     : null,
+          e.protein_g ? `${e.protein_g}g protein` : null,
+          e.salt_g    ? `${e.salt_g}g salt`        : null,
+        ].filter(Boolean).join(' · ');
+
+        const div = document.createElement('div');
+        div.className = 'saved-item';
+        div.innerHTML = `
+          <div class="saved-item-text">
+            <div>${escHtml(item.description)}</div>
+            ${nums ? `<div class="saved-item-nums">${nums}</div>` : ''}
+          </div>
+          <button class="saved-item-star${isStarred ? ' starred' : ''}"
+            aria-label="${isStarred ? 'Unsave regular' : 'Save as regular'}"
+            data-key="${escHtml(item.description)}">
+            ${isStarred ? '★' : '☆'}
+          </button>
+        `;
+
+        div.addEventListener('click', e => {
+          if (e.target.closest('.saved-item-star')) return;
+          closeMealSheet();
+          openMealSheet(item);
+        });
+
+        div.querySelector('.saved-item-star').addEventListener('click', e => {
+          e.stopPropagation();
+          const list = loadRegulars();
+          const idx  = list.findIndex(r => r.description.toLowerCase().trim() === key);
+          if (idx >= 0) list.splice(idx, 1);
+          else list.unshift({ description: item.description, type: item.type, estimates: item.estimates });
+          saveRegulars(list);
+          renderSavedList();
+        });
+
+        return div;
+      }
+
+      container.innerHTML = '';
+
+      if (regulars.length) {
+        const lbl = document.createElement('div');
+        lbl.className = 'saved-section-label';
+        lbl.textContent = 'Regulars';
+        container.appendChild(lbl);
+        regulars.forEach(item => container.appendChild(makeItem(item, true)));
+      }
+
+      const filteredRecent = recent.filter(r => !regularKeys.has(r.description.toLowerCase().trim()));
+      if (filteredRecent.length) {
+        const lbl = document.createElement('div');
+        lbl.className = 'saved-section-label';
+        lbl.textContent = 'Recent';
+        container.appendChild(lbl);
+        filteredRecent.forEach(item => container.appendChild(makeItem(item, false)));
+      }
+
+      if (!regulars.length && !filteredRecent.length) {
+        container.innerHTML = '<p class="saved-empty">No meals logged yet — your recent meals will appear here.</p>';
+      }
+    }
+
+    document.getElementById('addMealBtn').addEventListener('click', () => openMealSheet());
     document.getElementById('closeMealSheet').addEventListener('click', closeMealSheet);
 
     /* ─── Settings sheet ─────────────────────────────────── */
