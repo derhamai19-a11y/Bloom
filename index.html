@@ -1507,6 +1507,25 @@
       </div>
 
       <div class="setting-section">
+        <div class="setting-section-title">AI connection</div>
+        <p class="help" style="margin-top:0">Paste your Cloudflare Worker URL and app token here. These are saved locally on this device only.</p>
+        <div class="form-field" style="margin-top:0.75rem">
+          <label class="form-label" for="settingWorkerUrl">Worker URL</label>
+          <input type="url" id="settingWorkerUrl" class="form-input"
+            placeholder="https://bloom-worker.yourname.workers.dev"
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="settingWorkerToken">App token</label>
+          <input type="password" id="settingWorkerToken" class="form-input"
+            placeholder="Your X-App-Token secret"
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+        </div>
+        <button class="btn btn-ghost btn-full" id="saveConnectionBtn" style="margin-top:0.75rem">Save connection</button>
+        <div id="connectionStatus" style="margin-top:0.5rem;font-size:0.88rem;color:var(--ink-soft);text-align:center"></div>
+      </div>
+
+      <div class="setting-section">
         <div class="setting-section-title">Your data</div>
         <button class="btn btn-ghost btn-full" id="exportBtn">Export all data (JSON)</button>
         <p class="help" style="margin-top:0.5rem">Exports every logged day — suitable to share with your medical team. Photos not included.</p>
@@ -1615,7 +1634,7 @@
     // ⚠️  REQUIRED: Replace both values below with your actual Cloudflare Worker
     //     URL and shared token, otherwise AI estimation will never work.
     //     The AI tab will show an error; use Manual entry as a fallback.
-    const WORKER_URL   = 'OPENAI_API_KEY';
+    const WORKER_URL   = 'https://bloom.derhamai19.workers.dev';
     const WORKER_TOKEN = 'APP_TOKEN';
 
     /* ─── Storage keys ───────────────────────────────────── */
@@ -1811,11 +1830,13 @@
 
     /* ─── Worker call ────────────────────────────────────── */
     async function callWorker(payload) {
-      const resp = await fetch(`${WORKER_URL}/estimate`, {
+      const url   = lsGet('bloom_worker_url',   null) || WORKER_URL;
+      const token = lsGet('bloom_worker_token', null) || WORKER_TOKEN;
+      const resp = await fetch(`${url}/estimate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-App-Token': WORKER_TOKEN,
+          'X-App-Token': token,
         },
         body: JSON.stringify(payload),
       });
@@ -2183,6 +2204,13 @@
       document.getElementById('treatCount7').textContent  = countTreatDays(7);
       document.getElementById('treatCount30').textContent = countTreatDays(30);
       renderProfile(s);
+      // Populate connection fields
+      const savedUrl   = lsGet('bloom_worker_url',   null);
+      const savedToken = lsGet('bloom_worker_token', null);
+      document.getElementById('settingWorkerUrl').value   = savedUrl   || '';
+      document.getElementById('settingWorkerToken').value = savedToken || '';
+      document.getElementById('connectionStatus').textContent =
+        (savedUrl && savedToken) ? '✓ Connection configured' : '';
       settingsSheet.classList.add('active');
       sheetBackdrop.classList.add('active');
       settingsSheet.focus();
@@ -2212,6 +2240,21 @@
         </div>
       `).join('');
     }
+
+    document.getElementById('saveConnectionBtn').addEventListener('click', () => {
+      const url   = document.getElementById('settingWorkerUrl').value.trim().replace(/\/+$/, '');
+      const token = document.getElementById('settingWorkerToken').value.trim();
+      const statusEl = document.getElementById('connectionStatus');
+      if (!url || !token) {
+        statusEl.textContent = 'Please enter both a URL and a token.';
+        statusEl.style.color = 'var(--ochre)';
+        return;
+      }
+      lsSet('bloom_worker_url',   url);
+      lsSet('bloom_worker_token', token);
+      statusEl.textContent = '✓ Saved — AI should now work.';
+      statusEl.style.color = 'var(--sage)';
+    });
 
     document.getElementById('settingsButton').addEventListener('click', openSettings);
     document.getElementById('closeSettings').addEventListener('click', closeSettingsSheet);
