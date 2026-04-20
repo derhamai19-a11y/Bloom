@@ -24,6 +24,9 @@
 
     :root[data-theme="sunflowers"] {
       --bg: #F7EDD8;
+      --bg-grad-a: #EDE0BC;
+      --bg-grad-b: #F4E8CC;
+      --bg-grad-c: #E8DAB0;
       --surface: #FDF6E8;
       --surface-deep: #F0E4C4;
       --ink: #2C1A0E;
@@ -36,16 +39,24 @@
       --ochre: #B86A10;
       --cobalt: #1848A0;
       --sage: #5A7844;
+      --sage-soft: rgba(90,120,68,0.15);
+      --stem-color: #5A7040;
+      --swirl-1: #C88A30;
+      --swirl-2: #D4A040;
       --border: rgba(180,140,90,0.25);
       --border-strong: rgba(180,140,90,0.45);
       --centre-outer: #1E0A00;
       --centre-inner: #4A2008;
       --shadow: rgba(44,26,14,0.12);
       --shadow-deep: rgba(44,26,14,0.22);
+      --mood-chip-border: rgba(200,150,30,0.35);
     }
 
     :root[data-theme="starry"] {
       --bg: #08122E;
+      --bg-grad-a: #050C22;
+      --bg-grad-b: #08112A;
+      --bg-grad-c: #060A1E;
       --surface: #0F1E48;
       --surface-deep: #071030;
       --ink: #EAE2D4;
@@ -58,12 +69,17 @@
       --ochre: #D09050;
       --cobalt: #6890E0;
       --sage: #406840;
+      --sage-soft: rgba(64,104,64,0.2);
+      --stem-color: #487040;
+      --swirl-1: #4870C0;
+      --swirl-2: #3058A8;
       --border: rgba(104,144,224,0.18);
       --border-strong: rgba(104,144,224,0.35);
       --centre-outer: #080400;
       --centre-inner: #201008;
       --shadow: rgba(0,0,0,0.4);
       --shadow-deep: rgba(0,0,0,0.7);
+      --mood-chip-border: rgba(240,192,64,0.35);
     }
 
     /* ─── Reset & base ───────────────────────────────────── */
@@ -83,13 +99,14 @@
     /* ─── App shell ──────────────────────────────────────── */
     #app {
       min-height: 100vh;
-      padding: 1rem 1rem 2rem;
+      padding: 1.25rem 1rem 2rem;
+      max-width: 28rem;
+      margin: 0 auto;
       position: relative;
       overflow-x: hidden;
       background:
-        radial-gradient(circle at top, var(--yellow-glow), transparent 32%),
-        linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.18) 12%, transparent 24%);
-      filter: url('#grain');
+        radial-gradient(circle at 50% 0%, var(--yellow-glow), transparent 42%),
+        linear-gradient(160deg, var(--bg-grad-a) 0%, var(--bg-grad-b) 50%, var(--bg-grad-c) 100%);
     }
 
     /* ─── Top bar ────────────────────────────────────────── */
@@ -97,92 +114,256 @@
       display: flex;
       justify-content: space-between;
       gap: 1rem;
-      align-items: center;
-      margin-bottom: 1rem;
+      align-items: flex-start;
+      margin-bottom: 0.85rem;
     }
 
-    .brand { display: grid; gap: 0.25rem; }
+    .brand { display: grid; gap: 0.15rem; }
 
     .brand .title {
       font-family: 'Fraunces', serif;
-      font-size: clamp(2rem, 5vw, 2.7rem);
+      font-size: clamp(2rem, 7vw, 2.4rem);
       line-height: 0.95;
-      letter-spacing: -0.04em;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+      color: var(--ink);
     }
 
-    .brand .subtitle {
-      font-size: 0.95rem;
+    .brand .date-line {
+      font-family: 'Lora', serif;
+      font-size: 0.72rem;
       color: var(--ink-soft);
       text-transform: uppercase;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.18em;
+      margin-top: 0.2rem;
+      touch-action: manipulation;
+      user-select: none;
+      cursor: default;
     }
 
     .icon-btn {
-      border: none;
-      background: rgba(255,255,255,0.65);
-      color: var(--ink);
-      width: 48px;
-      height: 48px;
-      border-radius: 16px;
-      font-size: 1.3rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink-soft);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1rem;
       display: grid;
       place-items: center;
-      box-shadow: 0 2px 0 var(--border-strong), 0 6px 24px var(--shadow);
+      box-shadow: 0 2px 8px var(--shadow);
       cursor: pointer;
       flex-shrink: 0;
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.94);
+      box-shadow: 0 1px 4px var(--shadow);
+    }
+
+    .topbar-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0 0.25rem 0.75rem;
     }
 
     /* ─── Day screen ─────────────────────────────────────── */
-    .day-screen { display: grid; gap: 1rem; }
+    .day-screen { display: grid; gap: 0.85rem; }
 
-    /* ─── Hero card ──────────────────────────────────────── */
+    /* ─── Hero card (sunflower + labels + streaks) ───────── */
     .hero-card {
-      padding: 1.5rem;
-      border-radius: 32px;
+      padding: 0.5rem 0.5rem 1.25rem;
+      border-radius: 28px;
       background: var(--surface);
       box-shadow: 0 2px 0 var(--border-strong), 0 6px 24px var(--shadow);
       border: 1px solid var(--border);
+      overflow: hidden;
     }
 
-    .date-line {
-      font-family: 'Fraunces', serif;
-      font-size: 1.2rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-      color: var(--ink-mid);
+    .treat-badge-row {
+      display: flex;
+      justify-content: center;
+      min-height: 0;
+      padding: 0.25rem 0 0;
     }
 
-    .hero-copy p {
-      margin: 0;
-      font-size: 1rem;
-      max-width: 30rem;
-      color: var(--ink-soft);
+    /* ─── Sunflower hero area (SVG + positioned labels) ──── */
+    .sunflower-area {
+      position: relative;
+      width: 100%;
+      height: 324px;
+      margin-top: 0.25rem;
     }
 
-    /* ─── Sunflower placeholder ──────────────────────────── */
-    .sunflower-hero {
-      margin-top: 1.5rem;
+    .sunflower-svg-wrap {
+      position: absolute;
+      inset: 0;
       display: grid;
       place-items: center;
+      z-index: 1;
+      pointer-events: none;
     }
 
-    .sunflower-hero svg {
-      width: min(100%, 320px);
-      height: auto;
+    #sunflowerSvg {
+      width: 240px;
+      height: 240px;
       overflow: visible;
-      animation: sfFloat 5s ease-in-out infinite;
+      filter: drop-shadow(0 10px 28px var(--shadow));
+      animation: sfFloat 6s ease-in-out infinite;
     }
 
     @keyframes sfFloat {
       0%, 100% { transform: translateY(0px); }
-      50%       { transform: translateY(-4px); }
+      50%       { transform: translateY(-3px); }
     }
+
+    /* ── Goal labels positioned around the sunflower ── */
+    .goal-label {
+      position: absolute;
+      text-align: center;
+      min-width: 76px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .goal-label-top    { top: 6px;    left: 50%; transform: translateX(-50%); }
+    .goal-label-right  { top: 50%;    right: 14px; transform: translateY(-50%); text-align: right; }
+    .goal-label-bottom { bottom: 6px; left: 50%; transform: translateX(-50%); }
+    .goal-label-left   { top: 50%;    left: 14px; transform: translateY(-50%); text-align: left; }
+
+    .glabel-name {
+      font-family: 'Lora', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 0.15rem;
+      font-weight: 500;
+    }
+
+    .glabel-value {
+      font-family: 'Fraunces', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .glabel-target {
+      font-family: 'Lora', serif;
+      font-size: 0.72rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--ink-soft);
+    }
+
+    .glabel-unit {
+      font-family: 'Lora', serif;
+      font-size: 0.6rem;
+      color: var(--ink-soft);
+      letter-spacing: 0.06em;
+      margin-top: 0.1rem;
+    }
+
+    /* ─── Streak area (pill + 5 metric boxes) ─────────────── */
+    .streak-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0 1rem;
+      margin-top: 0.25rem;
+    }
+
+    .streak-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 0.55rem 1.2rem;
+      box-shadow: 0 2px 0 var(--border-strong), 0 4px 14px var(--shadow);
+    }
+
+    .streak-pill-empty {
+      font-family: 'Lora', serif;
+      font-size: 0.88rem;
+      color: var(--ink-soft);
+    }
+
+    .streak-pill .sp-emoji { font-size: 1.1rem; line-height: 1; }
+
+    .streak-pill .sp-num {
+      font-family: 'Fraunces', serif;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .streak-pill .sp-text {
+      font-family: 'Fraunces', serif;
+      font-size: 0.92rem;
+      font-style: italic;
+      color: var(--ink-mid);
+      line-height: 1;
+    }
+
+    .streak-boxes {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: nowrap;
+    }
+
+    .streak-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.28rem;
+      flex: 1 1 0;
+      min-width: 0;
+      max-width: 62px;
+    }
+
+    .streak-box-num {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 0 var(--border-strong), 0 3px 10px var(--shadow);
+      display: grid;
+      place-items: center;
+      font-family: 'Fraunces', serif;
+      font-size: 0.94rem;
+      font-weight: 700;
+      color: var(--cobalt);
+      transition: opacity 200ms ease;
+    }
+
+    .streak-box-num.zero {
+      color: var(--ink-soft);
+      opacity: 0.65;
+    }
+
+    .streak-box-label {
+      font-family: 'Lora', serif;
+      font-size: 0.62rem;
+      color: var(--ink-soft);
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── Sunflower placeholder (legacy — kept for safety) ─ */
+    .sunflower-hero { display: none; }
 
     /* ─── Section card (generic lifted card) ─────────────── */
     .section-card {
-      padding: 1.25rem;
-      border-radius: 28px;
+      padding: 1rem 1.15rem;
+      border-radius: 22px;
       background: var(--surface);
       border: 1px solid var(--border);
       box-shadow: 0 2px 0 var(--border-strong), 0 6px 24px var(--shadow);
@@ -197,11 +378,37 @@
 
     .section-title {
       font-family: 'Fraunces', serif;
-      font-size: 1.1rem;
-      color: var(--ink-mid);
+      font-size: 0.95rem;
+      color: var(--ink);
       margin: 0;
       font-weight: 600;
+      letter-spacing: -0.005em;
     }
+
+    .section-meta {
+      font-family: 'Lora', serif;
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── Meds + Mood side-by-side row ───────────────────── */
+    .meds-mood-row {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .meds-mood-row .section-card { padding: 1rem 1rem; }
+
+    .card-meds {
+      flex: 0 0 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .card-mood { flex: 1; min-width: 0; }
 
     /* ─── Stub cards (non-meal placeholders) ─────────────── */
     .placeholder-note {
@@ -784,83 +991,109 @@
 
     .sheet p, .sheet label { font-family: 'Lora', serif; }
 
-    /* ─── Water cups ─────────────────────────────────────────── */
-    .water-cups {
+    /* ─── Water droplets ─────────────────────────────────────── */
+    .water-drops {
       display: flex;
-      gap: 0.4rem;
-      margin-top: 0.85rem;
-      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.75rem;
+      justify-content: space-between;
       touch-action: manipulation;
     }
 
-    .cup-btn {
-      width: 30px;
-      height: 40px;
-      border: 2.5px solid var(--border-strong);
-      border-radius: 3px 3px 9px 9px;
-      background: var(--surface-deep);
-      cursor: pointer;
+    .drop-btn {
+      flex: 1 1 0;
+      min-width: 0;
+      max-width: 36px;
+      aspect-ratio: 22 / 28;
+      background: transparent;
+      border: none;
       padding: 0;
-      position: relative;
-      overflow: hidden;
-      transition: border-color 150ms;
-      flex-shrink: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .cup-btn::before {
-      content: '';
-      position: absolute;
-      bottom: 0; left: -1px; right: -1px;
-      height: 0;
-      background: var(--cobalt);
-      opacity: 0.72;
-      transition: height 220ms ease;
-      border-radius: 0 0 9px 9px;
-    }
-
-    .cup-btn.filled::before { height: calc(100% + 1px); }
-    .cup-btn.filled { border-color: var(--cobalt); }
-
-    /* ─── Meds button ─────────────────────────────────────────── */
-    .meds-row {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-top: 0.75rem;
-    }
-
-    .meds-toggle-btn {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      border: 3px solid var(--border-strong);
-      background: var(--surface-deep);
-      font-size: 1.7rem;
       cursor: pointer;
       display: grid;
       place-items: center;
-      box-shadow: 0 2px 0 var(--border-strong), 0 4px 14px var(--shadow);
-      transition: background 200ms, border-color 200ms, box-shadow 200ms;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .drop-btn svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      transition: opacity 200ms ease;
+    }
+
+    .drop-btn .drop-path {
+      fill: var(--cobalt);
+      stroke: var(--cobalt);
+      stroke-width: 1.5;
+      stroke-linejoin: round;
+      transition: fill 200ms ease, opacity 200ms ease;
+    }
+
+    .drop-btn:not(.filled) .drop-path {
+      fill: transparent;
+      opacity: 0.35;
+    }
+
+    /* ─── Meds button (compact, matches mockup) ─────────────── */
+    .meds-btn-round {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: none;
+      background: var(--surface-deep);
+      color: var(--ink-soft);
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 4px 16px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.15);
+      transition: background 250ms ease, color 250ms ease, transform 150ms ease, box-shadow 250ms ease;
       flex-shrink: 0;
       -webkit-tap-highlight-color: transparent;
     }
 
-    .meds-toggle-btn.taken {
-      background: var(--yellow);
-      border-color: var(--yellow-deep);
-      box-shadow: 0 2px 0 var(--yellow-deep), 0 4px 16px var(--yellow-glow);
+    .meds-btn-round.taken {
+      background: linear-gradient(135deg, var(--sage), color-mix(in srgb, var(--sage) 80%, transparent));
+      color: #fff;
+      box-shadow: 0 4px 16px var(--sage-soft), inset 0 1px 0 rgba(255,255,255,0.2);
     }
 
-    .meds-label { color: var(--ink-soft); font-size: 0.95rem; line-height: 1.5; }
+    .meds-btn-round:active { transform: scale(0.94); }
 
-    .meds-label strong {
-      display: block;
-      color: var(--ink);
-      font-family: 'Fraunces', serif;
-      font-size: 1rem;
-      margin-bottom: 0.15rem;
-      font-style: normal;
+    /* ─── Mood in card (compact) ────────────────────────────── */
+    .mood-face-display {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.65rem;
+    }
+
+    .mood-face-display svg { flex-shrink: 0; }
+
+    .mood-chips-compact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      flex: 1;
+    }
+
+    .mood-chip-static {
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      background: var(--yellow-glow);
+      color: var(--ink-mid);
+      border: 1px solid var(--mood-chip-border);
+      font-family: 'Lora', serif;
+      letter-spacing: 0.02em;
+    }
+
+    .mood-empty-hint {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+      margin-top: 0.5rem;
     }
 
     /* ─── BP section ──────────────────────────────────────────── */
@@ -890,22 +1123,23 @@
     /* ─── Mood section ────────────────────────────────────────── */
     .mood-faces {
       display: flex;
-      gap: 0.4rem;
-      margin-top: 0.85rem;
+      gap: 0.25rem;
+      margin-top: 0.55rem;
     }
 
     .mood-face-btn {
       flex: 1;
-      height: 52px;
-      border-radius: 14px;
+      height: 40px;
+      border-radius: 11px;
       border: 1.5px solid var(--border);
       background: var(--surface-deep);
-      font-size: 1.45rem;
+      font-size: 1.15rem;
       cursor: pointer;
       display: grid;
       place-items: center;
       transition: border-color 150ms, background 150ms;
       -webkit-tap-highlight-color: transparent;
+      padding: 0;
     }
 
     .mood-face-btn.selected {
@@ -916,18 +1150,18 @@
     .mood-chips {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.45rem;
-      margin-top: 0.75rem;
+      gap: 0.3rem;
+      margin-top: 0.55rem;
     }
 
     .mood-chip {
-      padding: 0.38rem 0.85rem;
-      border-radius: 20px;
-      border: 1.5px solid var(--border-strong);
+      padding: 0.25rem 0.65rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
       background: var(--surface-deep);
       color: var(--ink-mid);
       font-family: 'Lora', serif;
-      font-size: 0.88rem;
+      font-size: 0.75rem;
       cursor: pointer;
       transition: border-color 150ms, background 150ms, color 150ms;
       -webkit-tap-highlight-color: transparent;
@@ -957,37 +1191,19 @@
 
     .form-input:focus { border-color: var(--yellow-deep); }
 
-    /* ─── Streak display ─────────────────────────────────────── */
-    .streak-row {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-top: 0.35rem;
-      flex-wrap: wrap;
-      min-height: 1.3rem;
-    }
-
-    .streak-composite {
-      font-family: 'Fraunces', serif;
-      font-size: 0.95rem;
-      color: var(--ink-mid);
-    }
-
-    .streak-pips { display: flex; gap: 0.45rem; }
-
-    .streak-pip { font-size: 0.75rem; color: var(--ink-soft); }
-
+    /* ─── Treat badge (floats in hero) ────────────────────── */
     .treat-badge {
       display: inline-flex;
       align-items: center;
       gap: 0.3rem;
-      margin-top: 0.3rem;
-      padding: 0.18rem 0.65rem;
+      padding: 0.18rem 0.8rem;
       background: var(--yellow-highlight);
       border: 1px solid var(--yellow-deep);
       border-radius: 20px;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       color: var(--ochre);
+      font-family: 'Lora', serif;
+      letter-spacing: 0.03em;
     }
 
     /* ─── Range slider ────────────────────────────────────────── */
@@ -1056,19 +1272,19 @@
     .steps-entry .form-input { flex: 1; }
 
     /* ─── Sunflower SVG transitions ──────────────────────────── */
-    .sf-petal-el {
-      transition: ry 420ms cubic-bezier(0.34, 1.56, 0.64, 1),
-                  rx 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    .sf-goal-petal path {
+      transition: d 500ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                  opacity 300ms ease;
     }
     #sfCentreInner { transition: fill 400ms ease-out; }
 
-    /* ─── Water cup pop ──────────────────────────────────────── */
-    @keyframes cupPop {
-      0%   { transform: scale(1) translateY(0); }
-      42%  { transform: scale(1.22) translateY(-3px); }
-      100% { transform: scale(1) translateY(0); }
+    /* ─── Water drop pop ──────────────────────────────────────── */
+    @keyframes dropPop {
+      0%   { transform: scale(1); }
+      42%  { transform: scale(1.22) translateY(-2px); }
+      100% { transform: scale(1); }
     }
-    .cup-btn.cup-pop { animation: cupPop 300ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .drop-btn.drop-pop { animation: dropPop 300ms cubic-bezier(0.34, 1.56, 0.64, 1); }
 
     /* ─── Meds bloom animation ───────────────────────────────── */
     @keyframes medsBloom {
@@ -1077,7 +1293,7 @@
       65%  { transform: scale(0.93); }
       100% { transform: scale(1); }
     }
-    .meds-toggle-btn.meds-pop { animation: medsBloom 420ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .meds-btn-round.meds-pop { animation: medsBloom 420ms cubic-bezier(0.34, 1.56, 0.64, 1); }
 
     /* ─── Treat day hero tint ────────────────────────────────── */
     .hero-card.treat-day {
@@ -1229,7 +1445,14 @@
     }
 
     @media (min-width: 640px) {
-      #app { padding: 2rem 2rem 3rem; }
+      #app { padding: 2rem 1.5rem 3rem; }
+    }
+
+    /* ─── Fade-in on first load ──────────────────────────────── */
+    .fade-in { animation: fadeUp 480ms ease both; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -1246,75 +1469,83 @@
     <header class="topbar">
       <div class="brand">
         <div class="title">Bloom</div>
-        <div class="subtitle">wellness tracker</div>
+        <div class="date-line" id="todayDate">Loading…</div>
       </div>
       <button class="icon-btn" id="settingsButton" aria-label="Open settings">⚙︎</button>
     </header>
+    <div class="topbar-divider"></div>
 
     <main class="day-screen" id="dayScreen">
 
-      <!-- Hero / sunflower card -->
-      <section class="hero-card">
-        <div class="hero-copy">
-          <div class="date-line" id="todayDate"
-            style="touch-action:manipulation;user-select:none;cursor:default">Loading…</div>
-          <div id="treatBadge" class="treat-badge" style="display:none">🎉 Treat day</div>
-          <div id="streakRow" class="streak-row"></div>
+      <!-- Hero card: sunflower with surrounding labels + streak area -->
+      <section class="hero-card fade-in">
+
+        <div class="treat-badge-row">
+          <div id="treatBadge" class="treat-badge" style="display:none">🌿 Treat day</div>
         </div>
-        <div class="sunflower-hero" aria-hidden="true">
-          <svg id="sunflowerSvg" viewBox="-10 -5 340 430" role="img" aria-label="Sunflower"></svg>
+
+        <!-- Sunflower + 4 positioned goal labels -->
+        <div class="sunflower-area" aria-label="Today's goals — sunflower visual">
+          <div class="goal-label goal-label-top"    id="goalLabelCalories"></div>
+          <div class="goal-label goal-label-right"  id="goalLabelProtein"></div>
+          <div class="goal-label goal-label-bottom" id="goalLabelWater"></div>
+          <div class="goal-label goal-label-left"   id="goalLabelSalt"></div>
+
+          <div class="sunflower-svg-wrap">
+            <svg id="sunflowerSvg" viewBox="-120 -125 240 250" role="img" aria-label="Sunflower"></svg>
+          </div>
+        </div>
+
+        <!-- Streak pill + 5 metric boxes -->
+        <div class="streak-area">
+          <div id="streakPillHost"></div>
+          <div class="streak-boxes" id="streakBoxes"></div>
         </div>
       </section>
 
-      <!-- Meal section (live in Stage 2) -->
+      <!-- Meal section -->
       <section class="section-card" id="mealSection">
         <div class="section-header">
-          <h3 class="section-title">Meals</h3>
+          <h3 class="section-title">Today's meals</h3>
+          <span class="section-meta" id="mealTotals"></span>
         </div>
         <div id="mealList" class="meal-list" aria-live="polite"></div>
         <p class="meal-empty" id="mealEmpty">A fresh day, ready when you are.</p>
         <button class="add-meal-cta" id="addMealBtn">＋ Add a meal</button>
       </section>
 
-      <!-- Water section -->
+      <!-- Water section (droplets) -->
       <section class="section-card" id="waterSection">
         <div class="section-header">
           <h3 class="section-title">Water</h3>
-          <span id="waterTally" style="font-size:0.82rem;color:var(--ink-soft)">0 of 8 cups</span>
+          <span class="section-meta" id="waterTally">0 / 2 L</span>
         </div>
-        <div class="water-cups" id="waterCups" role="group" aria-label="Water intake — tap to fill, long-press to remove"></div>
+        <div class="water-drops" id="waterDrops" role="group" aria-label="Water intake — tap to fill, long-press to remove"></div>
       </section>
 
-      <!-- Meds section -->
-      <section class="section-card" id="medsSection">
-        <div class="section-header">
-          <h3 class="section-title">Meds</h3>
-        </div>
-        <div class="meds-row">
-          <button class="meds-toggle-btn" id="medsToggleBtn" aria-pressed="false" aria-label="Toggle meds taken">💊</button>
-          <div class="meds-label">
-            <strong id="medsStatusText">Not taken yet</strong>
-            Tap when you've taken your medication.
-          </div>
-        </div>
-      </section>
+      <!-- Meds + Mood side-by-side -->
+      <div class="meds-mood-row">
+
+        <section class="section-card card-meds" id="medsSection">
+          <h3 class="section-title" style="align-self:flex-start">Meds</h3>
+          <button class="meds-btn-round" id="medsToggleBtn" aria-pressed="false" aria-label="Toggle meds taken">💊</button>
+          <span class="section-meta" id="medsStatusText" style="text-align:center">Not taken</span>
+        </section>
+
+        <section class="section-card card-mood" id="moodSection">
+          <h3 class="section-title">Mood</h3>
+          <div class="mood-faces" id="moodFaces" role="group" aria-label="How are you feeling? Pick one"></div>
+          <div class="mood-chips" id="moodChips" role="group" aria-label="Mood words — pick up to 3"></div>
+        </section>
+      </div>
 
       <!-- Blood pressure section -->
       <section class="section-card" id="bpSection">
         <div class="section-header">
-          <h3 class="section-title">Blood Pressure</h3>
+          <h3 class="section-title">Blood pressure</h3>
           <button class="btn btn-ghost btn-sm" id="logBpBtn">+ Log</button>
         </div>
         <div id="bpLatest"></div>
-      </section>
-
-      <!-- Mood section -->
-      <section class="section-card" id="moodSection">
-        <div class="section-header">
-          <h3 class="section-title">Mood</h3>
-        </div>
-        <div class="mood-faces" id="moodFaces" role="group" aria-label="How are you feeling? Pick one"></div>
-        <div class="mood-chips" id="moodChips" role="group" aria-label="Mood words — pick up to 3"></div>
       </section>
 
       <!-- Symptom section — hidden until feature flag on -->
@@ -1339,9 +1570,12 @@
         <div id="stepsDisplay"></div>
       </section>
 
-      <section class="placeholder-note">
-        <p>Tap the cog to customise your experience.</p>
-      </section>
+      <!-- Treat day hint -->
+      <div style="text-align:center;padding:0.25rem 0 0.5rem">
+        <span style="font-size:0.78rem;color:var(--ink-soft);font-family:'Lora',serif;letter-spacing:0.02em">
+          Long-press the date to mark today as a treat day 🌿
+        </span>
+      </div>
     </main>
   </div>
 
@@ -1850,16 +2084,26 @@
 
     /* ─── Meal list rendering ────────────────────────────── */
     function renderMealList(day) {
-      const list  = document.getElementById('mealList');
-      const empty = document.getElementById('mealEmpty');
+      const list   = document.getElementById('mealList');
+      const empty  = document.getElementById('mealEmpty');
+      const totals = document.getElementById('mealTotals');
 
       if (!day.meals.length) {
         list.innerHTML = '';
         empty.style.display = '';
+        if (totals) totals.textContent = '';
         return;
       }
 
       empty.style.display = 'none';
+
+      // Running totals shown in section header
+      if (totals) {
+        const totCal = day.meals.reduce((s, m) => s + (m.estimates?.calories  || 0), 0);
+        const totPro = day.meals.reduce((s, m) => s + (m.estimates?.protein_g || 0), 0);
+        totals.textContent = `${totCal.toLocaleString()} kcal · ${totPro}g protein`;
+      }
+
       list.innerHTML = day.meals.map(meal => {
         const est = meal.estimates;
         const estimatesLine = [
@@ -2411,48 +2655,155 @@
     }
 
     /* ─── Sunflower ──────────────────────────────────────── */
+    // Petal shape constants. Centre is at origin. Petals point "up" (negative y).
+    // Decorative petals are always full; goal petals scale with `bloom` (0–1).
+    const SF_DECORATIVE_ANGLES = [22.5, 45, 67.5, 112.5, 135, 157.5,
+                                  202.5, 225, 247.5, 292.5, 315, 337.5];
+    const SF_DECORATIVE_PATH   = 'M 0,-20 C 24,-40 28,-88 0,-104 C -28,-88 -24,-40 0,-20';
+
+    // Build a goal-petal path that scales with bloom factor b (0–1).
+    // Base is fixed at y=-20 (edge of centre disc); tip extends out to y=-20-86*b.
+    function sfGoalPetalPath(b) {
+      if (b <= 0.001) return 'M 0,-20 L 0,-20 Z';
+      return `M 0,-20 C ${(26*b).toFixed(2)},${(-20 - 22*b).toFixed(2)} `
+           + `${(30*b).toFixed(2)},${(-20 - 66*b).toFixed(2)} `
+           + `0,${(-20 - 86*b).toFixed(2)} C `
+           + `${(-30*b).toFixed(2)},${(-20 - 66*b).toFixed(2)} `
+           + `${(-26*b).toFixed(2)},${(-20 - 22*b).toFixed(2)} 0,-20`;
+    }
+
     function buildSunflowerSVG() {
-      const CX = 160, CY = 155, RING = 58;
-      let html = `<defs>
-        <filter id="sfGlow" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <g id="sfSwirls" fill="none" stroke="var(--yellow)" stroke-linecap="round" opacity="0.10">
-        <path d="M15 30 Q70 8 130 35 T250 25"       stroke-width="3.5"/>
-        <path d="M18 68 Q78 44 143 68 T273 58"       stroke-width="2.5"/>
-        <path d="M5 108 Q55 90 108 108 T208 98"      stroke-width="2"/>
-        <path d="M258 205 Q235 190 215 205 T175 198" stroke-width="2"/>
-        <path d="M32 338 Q98 318 163 338 T293 326"   stroke-width="3"/>
-        <path d="M14 375 Q84 356 160 374 T298 363"   stroke-width="2.5"/>
-      </g>
-      <g id="sfStem">
-        <path id="sfStemPath" fill="none" stroke="var(--sage)" stroke-width="16" stroke-linecap="round" d=""/>
-        <path id="sfLeaf1"    fill="var(--sage)" opacity="0.75" d=""/>
-        <path id="sfLeaf2"    fill="var(--sage)" opacity="0.75" d=""/>
-        <text id="sfStreakLabel" text-anchor="middle" font-family="Fraunces,serif"
-          font-size="13" font-weight="700" fill="white" opacity="0.85"></text>
-      </g>
-      <g id="sfVase"></g>
-      <g id="sfPetals">`;
-      for (let i = 0; i < 16; i++) {
-        html += `<g class="sf-petal${i % 4 === 0 ? ' sf-goal' : ''}" id="sfPetal${i}"
-          transform="translate(${CX},${CY})">
-          <ellipse class="sf-petal-el" cx="0" cy="0" rx="0" ry="0"/></g>`;
+      // Pre-build the centre seed texture (outer ring of 22, inner ring of 14)
+      let seedsOuter = '';
+      for (let i = 0; i < 22; i++) {
+        const a  = (i / 22) * Math.PI * 2;
+        const cx = (Math.cos(a) * 21).toFixed(2);
+        const cy = (Math.sin(a) * 21).toFixed(2);
+        const rot = ((i / 22) * 360).toFixed(1);
+        seedsOuter += `<ellipse cx="${cx}" cy="${cy}" rx="2.2" ry="1.6" `
+                    + `transform="rotate(${rot} ${cx} ${cy})" `
+                    + `fill="var(--centre-inner)" opacity="0.92"/>`;
       }
-      html += `</g>
-      <g id="sfCentre">
-        <circle cx="${CX}" cy="${CY}" r="${RING}" fill="var(--centre-outer)"/>
-        <circle id="sfCentreInner" cx="${CX}" cy="${CY}" r="40"/>
-      </g>
-      <g id="sfLabels">
-        ${[0, 90, 180, 270].map(a => `<text id="sfLabel${a}" text-anchor="middle"></text>`).join('')}
-      </g>
-      <text id="sfCaption" text-anchor="middle" x="${CX}" y="420"
-        font-family="Lora,serif" font-style="italic" font-size="11" fill="var(--ink-soft)"></text>`;
+      let seedsInner = '';
+      for (let i = 0; i < 14; i++) {
+        const a  = (i / 14) * Math.PI * 2 + 0.15;
+        const cx = (Math.cos(a) * 13).toFixed(2);
+        const cy = (Math.sin(a) * 13).toFixed(2);
+        seedsInner += `<circle cx="${cx}" cy="${cy}" r="1.8" `
+                    + `fill="var(--centre-outer)" opacity="0.82"/>`;
+      }
+
+      // Decorative back-layer petals (12 petals at 22.5° spacing, excluding cardinals)
+      let decorative = '';
+      for (const angle of SF_DECORATIVE_ANGLES) {
+        decorative += `
+          <g transform="rotate(${angle})">
+            <path d="${SF_DECORATIVE_PATH}" fill="var(--yellow-deep)" opacity="0.72"
+                  stroke="var(--ochre)" stroke-width="0.4"/>
+            <path d="M 0,-22 L 0,-96" stroke="var(--ochre)" stroke-width="0.6"
+                  opacity="0.2" stroke-linecap="round"/>
+          </g>`;
+      }
+
+      // Goal petals (4 cardinal positions; paths populated by updateSunflowerSVG)
+      const goalPetals = `
+        <g class="sf-goal-petal" id="sfGoalCalories" transform="rotate(0)">
+          <path id="sfGoalCaloriesPath"     d="M 0,-20 L 0,-20 Z"
+                fill="var(--yellow)" stroke="var(--ochre)" stroke-width="0.8"/>
+          <path id="sfGoalCaloriesVein"     d="M 0,-22 L 0,-22"
+                stroke="var(--ochre)" stroke-width="1" opacity="0.32" stroke-linecap="round"/>
+          <path id="sfGoalCaloriesHighlight" d=""
+                fill="none" stroke="var(--yellow-highlight)" stroke-width="1.5" stroke-linecap="round"/>
+        </g>
+        <g class="sf-goal-petal" id="sfGoalProtein" transform="rotate(90)">
+          <path id="sfGoalProteinPath"      d="M 0,-20 L 0,-20 Z"
+                fill="var(--yellow)" stroke="var(--ochre)" stroke-width="0.8"/>
+          <path id="sfGoalProteinVein"      d="M 0,-22 L 0,-22"
+                stroke="var(--ochre)" stroke-width="1" opacity="0.32" stroke-linecap="round"/>
+          <path id="sfGoalProteinHighlight"  d=""
+                fill="none" stroke="var(--yellow-highlight)" stroke-width="1.5" stroke-linecap="round"/>
+        </g>
+        <g class="sf-goal-petal" id="sfGoalWater" transform="rotate(180)">
+          <path id="sfGoalWaterPath"        d="M 0,-20 L 0,-20 Z"
+                fill="var(--yellow)" stroke="var(--ochre)" stroke-width="0.8"/>
+          <path id="sfGoalWaterVein"        d="M 0,-22 L 0,-22"
+                stroke="var(--ochre)" stroke-width="1" opacity="0.32" stroke-linecap="round"/>
+          <path id="sfGoalWaterHighlight"    d=""
+                fill="none" stroke="var(--yellow-highlight)" stroke-width="1.5" stroke-linecap="round"/>
+        </g>
+        <g class="sf-goal-petal" id="sfGoalSalt" transform="rotate(270)">
+          <path id="sfGoalSaltPath"         d="M 0,-20 L 0,-20 Z"
+                fill="var(--yellow)" stroke="var(--ochre)" stroke-width="0.8"/>
+          <path id="sfGoalSaltVein"         d="M 0,-22 L 0,-22"
+                stroke="var(--ochre)" stroke-width="1" opacity="0.32" stroke-linecap="round"/>
+          <path id="sfGoalSaltHighlight"     d=""
+                fill="none" stroke="var(--yellow-highlight)" stroke-width="1.5" stroke-linecap="round"/>
+        </g>`;
+
+      const html = `
+        <defs>
+          <filter id="sfGlow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- Soft yellow glow disc behind the flower -->
+        <circle cx="0" cy="0" r="85" fill="var(--yellow-glow)"/>
+
+        <!-- Van Gogh atmosphere swirls -->
+        <g opacity="0.11">
+          <path d="M -98,-20 Q -50,-92 22,-68 Q 82,-40 88,24 Q 92,82 32,100 Q -28,114 -72,72 Q -110,34 -98,-20"
+                fill="none" stroke="var(--swirl-1)" stroke-width="11" stroke-linecap="round"/>
+          <path d="M -60,-90 Q -10,-120 52,-86 Q 100,-52 105,12"
+                fill="none" stroke="var(--swirl-2)" stroke-width="7" stroke-linecap="round"/>
+          <path d="M 32,-104 Q 82,-80 100,-32"
+                fill="none" stroke="var(--swirl-1)" stroke-width="5" stroke-linecap="round"/>
+        </g>
+
+        <!-- Stem + leaves + streak label -->
+        <g id="sfStem">
+          <path id="sfStemPath" fill="none" stroke="var(--stem-color)"
+                stroke-width="6" stroke-linecap="round"
+                d="M 3,28 Q 15,64 11,104"/>
+          <path id="sfLeaf1" fill="var(--sage)" opacity="0.88"
+                d="M 11,74 Q 40,54 46,72 Q 32,85 11,78"/>
+          <path id="sfLeaf2" fill="var(--sage)" opacity="0.7"
+                d="M 6,92 Q -22,76 -20,92 Q -8,102 6,96"/>
+          <text id="sfStreakLabel" text-anchor="middle"
+                font-family="Fraunces,serif" font-size="9" font-weight="700"
+                fill="rgba(255,255,255,0.85)"></text>
+        </g>
+
+        <!-- Treat-day vase (rendered conditionally) -->
+        <g id="sfVase"></g>
+
+        <!-- Decorative petals (back layer, always full) -->
+        <g id="sfDecorative">${decorative}</g>
+
+        <!-- Goal petals (4 cardinals, scale with bloom) -->
+        <g id="sfGoalPetals">${goalPetals}</g>
+
+        <!-- Centre disc + seed texture -->
+        <g id="sfCentre">
+          <circle cx="1" cy="2" r="28" fill="var(--centre-outer)" opacity="0.3"/>
+          <circle cx="0" cy="0" r="27" fill="var(--centre-outer)"/>
+          <g id="sfSeedsOuter">${seedsOuter}</g>
+          <g id="sfSeedsInner">${seedsInner}</g>
+          <circle id="sfCentreInner" cx="0" cy="0" r="6" fill="var(--centre-inner)" opacity="0.9"/>
+          <circle cx="0" cy="0" r="3" fill="var(--centre-outer)"/>
+        </g>
+      `;
       document.getElementById('sunflowerSvg').innerHTML = html;
     }
+
+    // Map of goal keys to their DOM ids
+    const SF_GOALS = [
+      { key: 'calories', pathId: 'sfGoalCaloriesPath', veinId: 'sfGoalCaloriesVein', hlId: 'sfGoalCaloriesHighlight' },
+      { key: 'protein',  pathId: 'sfGoalProteinPath',  veinId: 'sfGoalProteinVein',  hlId: 'sfGoalProteinHighlight'  },
+      { key: 'water',    pathId: 'sfGoalWaterPath',    veinId: 'sfGoalWaterVein',    hlId: 'sfGoalWaterHighlight'    },
+      { key: 'salt',     pathId: 'sfGoalSaltPath',     veinId: 'sfGoalSaltVein',     hlId: 'sfGoalSaltHighlight'     },
+    ];
 
     function updateSunflowerSVG(day) {
       const t      = loadSettings().targets;
@@ -2460,142 +2811,166 @@
       const waterB = Math.min(1, (day.water_ml || 0) / (t.water_ml.min || 2000));
       const meds   = !!day.meds_taken;
       const treat  = !!day.isTreatDay;
-      const meals  = day.meals || [];
-      const CX = 160, CY = 155, RING = 58;
 
-      const totCal  = meals.reduce((s, m) => s + (m.estimates?.calories  || 0), 0);
-      const totProt = meals.reduce((s, m) => s + (m.estimates?.protein_g || 0), 0);
-      const totSalt = meals.reduce((s, m) => s + (m.estimates?.salt_g    || 0), 0);
-      const wCups   = Math.round((day.water_ml || 0) / ML_PER_CUP);
+      // Bloom fractions by goal key (treat day = full bloom on everything)
+      const blooms = treat
+        ? { calories: 1, protein: 1, water: 1, salt: 1 }
+        : {
+            calories: Math.max(0, Math.min(1, pb.calories || 0)),
+            protein:  Math.max(0, Math.min(1, pb.protein  || 0)),
+            water:    waterB,
+            salt:     Math.max(0, Math.min(1, pb.salt     || 0)),
+          };
 
-      // 0°=Calories(top), 90°=Protein(right), 180°=Water(bottom), 270°=Salt(left)
-      const goalBloom = treat
-        ? { 0: 1, 90: 1, 180: 1, 270: 1 }
-        : { 0: pb.calories || 0, 90: pb.protein || 0, 180: waterB, 270: pb.salt || 0 };
+      // Draw each goal petal via its scaled path
+      for (const g of SF_GOALS) {
+        const b = blooms[g.key];
+        const pathEl = document.getElementById(g.pathId);
+        const veinEl = document.getElementById(g.veinId);
+        const hlEl   = document.getElementById(g.hlId);
+        if (!pathEl || !veinEl || !hlEl) continue;
 
-      // ── petals ──
-      for (let i = 0; i < 16; i++) {
-        const angle  = i * 22.5;
-        const isGoal = i % 4 === 0;
-        const bloom  = isGoal ? Math.max(0, goalBloom[angle] || 0) : 1;
-        const maxLen = isGoal ? 74 : 50;
-        const minLen = isGoal ? 2  : 50;
-        const len    = minLen + (maxLen - minLen) * bloom;
-        const w      = isGoal ? Math.max(3, 30 * Math.sqrt(Math.max(bloom, 0.02))) : 21;
-        const dist   = RING + len / 2;
-        const g  = document.getElementById(`sfPetal${i}`);
-        const el = g?.querySelector('ellipse');
-        if (!g || !el) continue;
-        g.setAttribute('transform',
-          `rotate(${angle},${CX},${CY}) translate(${CX},${(CY - dist).toFixed(1)})`);
-        el.setAttribute('rx', w.toFixed(1));
-        el.setAttribute('ry', (len / 2).toFixed(1));
-        if (isGoal) {
-          el.setAttribute('fill',         'var(--yellow)');
-          el.setAttribute('stroke',       'var(--ochre)');
-          el.setAttribute('stroke-width', '1.8');
-          el.setAttribute('opacity',      '1');
+        pathEl.setAttribute('d', sfGoalPetalPath(b));
+
+        // Centre vein runs from base up to near the tip
+        if (b > 0.05) {
+          veinEl.setAttribute('d', `M 0,-22 L 0,${(-20 - 78 * b).toFixed(2)}`);
+          veinEl.setAttribute('opacity', '0.32');
         } else {
-          el.setAttribute('fill',         'rgba(240,188,24,0.55)');
-          el.setAttribute('stroke',       'rgba(200,146,10,0.3)');
-          el.setAttribute('stroke-width', '1');
-          el.setAttribute('opacity',      '0.82');
+          veinEl.setAttribute('opacity', '0');
+        }
+
+        // Light highlight stroke down one side of the petal (only when substantial)
+        if (b > 0.2) {
+          const hlPath = `M ${(3*b).toFixed(2)},${(-20 - 12*b).toFixed(2)} `
+                       + `C ${(22*b).toFixed(2)},${(-20 - 30*b).toFixed(2)} `
+                       + `${(24*b).toFixed(2)},${(-20 - 58*b).toFixed(2)} `
+                       + `${(3*b).toFixed(2)},${(-20 - 78*b).toFixed(2)}`;
+          hlEl.setAttribute('d', hlPath);
+          hlEl.setAttribute('opacity', '1');
+        } else {
+          hlEl.setAttribute('opacity', '0');
         }
       }
 
-      // ── stem: grows from short (0d) to full height (30d+) ──
+      // Stem length grows with composite streak (0–30 days → short→tall)
       const streakDays = computeStreaks().composite;
       const stemFrac   = Math.min(1, streakDays / 30);
-      const s0         = CY + RING;
-      const stemEndY   = Math.round(296 + stemFrac * 89);
-      const l1y        = s0 + (stemEndY - s0) * 0.42;
-      const l2y        = s0 + (stemEndY - s0) * 0.70;
+      const stemEndY   = 75 + 55 * stemFrac;    // 75 (short) → 130 (full)
+      const l1y        = 28 + (stemEndY - 28) * 0.52;
+      const l2y        = 28 + (stemEndY - 28) * 0.78;
+
       document.getElementById('sfStemPath')?.setAttribute('d',
-        `M${CX} ${s0} C${CX-14} ${s0+45} ${CX+14} ${(l2y-20).toFixed(0)} ${CX} ${stemEndY}`);
+        `M 3,28 Q 15,${(28 + 36 * stemFrac).toFixed(1)} 11,${stemEndY.toFixed(1)}`);
+
       document.getElementById('sfLeaf1')?.setAttribute('d',
-        `M${CX} ${l1y.toFixed(0)} C${CX-55} ${(l1y-20).toFixed(0)} ${CX-85} ${(l1y+20).toFixed(0)} ${CX-62} ${(l1y+50).toFixed(0)}`);
+        `M 11,${l1y.toFixed(1)} Q 40,${(l1y - 18).toFixed(1)} 46,${l1y.toFixed(1)} `
+      + `Q 32,${(l1y + 13).toFixed(1)} 11,${(l1y + 4).toFixed(1)}`);
+
       document.getElementById('sfLeaf2')?.setAttribute('d',
-        `M${CX} ${l2y.toFixed(0)} C${CX+55} ${(l2y-20).toFixed(0)} ${CX+85} ${(l2y+20).toFixed(0)} ${CX+62} ${(l2y+50).toFixed(0)}`);
+        `M 6,${l2y.toFixed(1)} Q -22,${(l2y - 16).toFixed(1)} -20,${l2y.toFixed(1)} `
+      + `Q -8,${(l2y + 10).toFixed(1)} 6,${(l2y + 4).toFixed(1)}`);
+
+      // Streak label on stem
       const sl = document.getElementById('sfStreakLabel');
       if (sl) {
-        sl.setAttribute('x', String(CX));
-        sl.setAttribute('y', String(Math.max(s0 + 18, stemEndY - 10)));
+        sl.setAttribute('x', '11');
+        sl.setAttribute('y', Math.max(stemEndY - 4, 78).toFixed(1));
         sl.textContent = streakDays > 0 ? `${streakDays}d` : '';
       }
 
-      // ── treat-day vase ──
+      // Treat-day vase
       const vaseEl = document.getElementById('sfVase');
-      if (vaseEl) vaseEl.innerHTML = treat ? `
-        <path d="M${CX-22} ${stemEndY} Q${CX-32} ${stemEndY+17} ${CX-29} ${stemEndY+37} L${CX+29} ${stemEndY+37} Q${CX+32} ${stemEndY+17} ${CX+22} ${stemEndY} Z"
-          fill="var(--cobalt)" opacity="0.7"/>
-        <rect x="${CX-29}" y="${stemEndY-3}" width="58" height="7" rx="3.5"
-          fill="var(--cobalt)" opacity="0.85"/>
-        <ellipse cx="${CX}" cy="${stemEndY+41}" rx="32" ry="5" fill="var(--cobalt)" opacity="0.35"/>` : '';
+      if (vaseEl) {
+        if (treat) {
+          const vy = stemEndY;
+          vaseEl.innerHTML = `
+            <path d="M -20,${vy.toFixed(1)} Q -28,${(vy+14).toFixed(1)} -26,${(vy+30).toFixed(1)} L 26,${(vy+30).toFixed(1)} Q 28,${(vy+14).toFixed(1)} 20,${vy.toFixed(1)} Z"
+                  fill="var(--cobalt)" opacity="0.7"/>
+            <rect x="-26" y="${(vy-4).toFixed(1)}" width="52" height="6" rx="3"
+                  fill="var(--cobalt)" opacity="0.85"/>
+            <ellipse cx="0" cy="${(vy+32).toFixed(1)}" rx="28" ry="4.5"
+                     fill="var(--cobalt)" opacity="0.35"/>`;
+        } else {
+          vaseEl.innerHTML = '';
+        }
+      }
 
-      // ── centre: rich brown + amber glow when meds taken; pale beige when not ──
+      // Centre dot: vivid when meds taken, dim when not
       const ci = document.getElementById('sfCentreInner');
       if (ci) {
-        ci.setAttribute('fill',   meds ? 'var(--centre-inner)' : 'rgba(220,200,165,0.55)');
-        ci.setAttribute('filter', meds ? 'url(#sfGlow)'        : '');
+        ci.setAttribute('fill',   meds ? 'var(--centre-inner)' : 'rgba(200,175,140,0.55)');
+        ci.setAttribute('filter', meds ? 'url(#sfGlow)' : '');
       }
 
-      // ── treat-day hero tint ──
+      // Treat-day hero tint
       document.querySelector('.hero-card')?.classList.toggle('treat-day', treat);
 
-      // ── labels: metric name / current / target / unit ──
-      const ld = 148;
-      const labelMap = {
-        0:   { name: 'CALORIES', line2: treat ? t.calories.max.toLocaleString()     : `${totCal.toLocaleString()} / ${t.calories.max.toLocaleString()}`, unit: 'kcal' },
-        90:  { name: 'PROTEIN',  line2: treat ? `${t.protein_g.max}g`               : `${totProt}g / ${t.protein_g.max}g`, unit: 'protein' },
-        180: { name: 'WATER',    line2: treat ? `${CUPS} / ${CUPS}`                 : `${wCups} / ${CUPS}`, unit: 'cups' },
-        270: { name: 'SALT',     line2: treat ? `${t.salt_g.max}g`                  : `${totSalt}g / ${t.salt_g.max}g`, unit: 'salt' },
-      };
-      for (const [aStr, info] of Object.entries(labelMap)) {
-        const ang  = parseInt(aStr);
-        const rad  = (ang * Math.PI) / 180;
-        const lx   = (CX + Math.sin(rad) * ld).toFixed(1);
-        const ly0  = (CY - Math.cos(rad) * ld - 10).toFixed(1);
-        const el   = document.getElementById(`sfLabel${ang}`);
-        if (!el) continue;
-        const muted = treat ? 'var(--ink-soft)' : 'var(--ink-mid)';
-        el.innerHTML = `
-          <tspan x="${lx}" y="${ly0}"
-            font-family="Lora,serif" font-size="7.5" fill="var(--ink-soft)"
-            letter-spacing="0.1em">${info.name}</tspan>
-          <tspan x="${lx}" dy="11"
-            font-family="Fraunces,serif" font-size="11" font-weight="700"
-            fill="${muted}">${info.line2}</tspan>
-          <tspan x="${lx}" dy="9.5"
-            font-family="Lora,serif" font-size="7.5"
-            fill="var(--ink-soft)">${info.unit}</tspan>`;
-      }
+      // ─── Update the 4 positioned HTML goal labels (outside the SVG) ───
+      updateGoalLabels(day, t, treat);
+    }
 
-      // ── treat-day caption ──
-      const cap = document.getElementById('sfCaption');
-      if (cap) cap.textContent = treat ? 'A treat day — rest and enjoy.' : '';
+    // Fill in the 4 goal labels around the sunflower
+    function updateGoalLabels(day, t, treat) {
+      const meals  = day.meals || [];
+      const totCal  = meals.reduce((s, m) => s + (m.estimates?.calories  || 0), 0);
+      const totProt = meals.reduce((s, m) => s + (m.estimates?.protein_g || 0), 0);
+      const totSalt = meals.reduce((s, m) => s + (m.estimates?.salt_g    || 0), 0);
+      const wL      = ((day.water_ml || 0) / 1000).toFixed(1);
+      const tgtL    = ((t.water_ml.min || 2000) / 1000).toFixed(1);
+
+      const mk = (name, current, target, unit) => `
+        <div class="glabel-name">${name}</div>
+        <div class="glabel-value">${current}<span class="glabel-target"> / ${target}</span></div>
+        <div class="glabel-unit">${unit}</div>`;
+
+      document.getElementById('goalLabelCalories').innerHTML =
+        mk('Calories', treat ? '—' : totCal.toLocaleString(),
+           t.calories.max.toLocaleString(), 'kcal');
+
+      document.getElementById('goalLabelProtein').innerHTML =
+        mk('Protein', treat ? '—' : totProt.toFixed(0),
+           String(t.protein_g.max), 'grams');
+
+      document.getElementById('goalLabelWater').innerHTML =
+        mk('Water', treat ? '—' : wL, tgtL, 'litres');
+
+      document.getElementById('goalLabelSalt').innerHTML =
+        mk('Salt', treat ? '—' : totSalt.toFixed(1),
+           Number(t.salt_g.max).toFixed(1), 'grams');
     }
 
     /* ─── Water ──────────────────────────────────────────── */
     const CUPS       = 8;
     const ML_PER_CUP = 250;
 
+    // Droplet SVG used in each drop button
+    const DROP_SVG = `
+      <svg viewBox="0 0 22 28" aria-hidden="true">
+        <path class="drop-path"
+          d="M 11,2 Q 20,12 20,18 A 9,9 0 0,1 2,18 Q 2,12 11,2 Z"/>
+      </svg>`;
+
     function renderWater(day) {
-      const cupsEl = document.getElementById('waterCups');
-      const tally  = document.getElementById('waterTally');
+      const wrap  = document.getElementById('waterDrops');
+      const tally = document.getElementById('waterTally');
       const filled = Math.min(CUPS, Math.round((day.water_ml || 0) / ML_PER_CUP));
-      tally.textContent = `${filled} of ${CUPS} cups`;
-      cupsEl.innerHTML = Array.from({ length: CUPS }, (_, i) => `
-        <button class="cup-btn${i < filled ? ' filled' : ''}"
-          data-cup="${i}"
-          aria-label="Cup ${i + 1}${i < filled ? ' (filled)' : ''}"
-          aria-pressed="${i < filled}"></button>
+      const litres = ((day.water_ml || 0) / 1000).toFixed(1);
+      const targetL = (CUPS * ML_PER_CUP / 1000).toFixed(0);
+      tally.textContent = `${litres} / ${targetL} L`;
+      wrap.innerHTML = Array.from({ length: CUPS }, (_, i) => `
+        <button class="drop-btn${i < filled ? ' filled' : ''}"
+          data-drop="${i}"
+          aria-label="Drop ${i + 1}${i < filled ? ' (filled)' : ''}"
+          aria-pressed="${i < filled}">${DROP_SVG}</button>
       `).join('');
     }
 
     let waterPressTimer = null;
+    const waterDropsEl = document.getElementById('waterDrops');
 
-    document.getElementById('waterCups').addEventListener('pointerdown', e => {
-      if (!e.target.closest('.cup-btn')) return;
+    waterDropsEl.addEventListener('pointerdown', e => {
+      if (!e.target.closest('.drop-btn')) return;
       e.preventDefault();
       waterPressTimer = setTimeout(() => {
         waterPressTimer = null;
@@ -2607,30 +2982,47 @@
       }, 550);
     });
 
-    document.getElementById('waterCups').addEventListener('pointerup', e => {
-      if (!waterPressTimer) return;
-      clearTimeout(waterPressTimer);
-      waterPressTimer = null;
-      const btn = e.target.closest('.cup-btn');
+    waterDropsEl.addEventListener('pointerup', e => {
+      const btn = e.target.closest('.drop-btn');
       if (!btn) return;
-      const idx = parseInt(btn.dataset.cup, 10);
-      const day = loadDay(isoToday());
-      day.water_ml = (idx + 1) * ML_PER_CUP;
-      saveDay(day);
-      renderWater(day);
-      haptic();
-      const filled = document.querySelectorAll('#waterCups .cup-btn.filled');
-      const last = filled[filled.length - 1];
-      if (last) { last.classList.add('cup-pop'); }
-      updateSunflowerSVG(day);
+      if (waterPressTimer) {
+        clearTimeout(waterPressTimer);
+        waterPressTimer = null;
+        const day = loadDay(isoToday());
+        const idx = Number(btn.dataset.drop);
+        const filled = Math.round((day.water_ml || 0) / ML_PER_CUP);
+        // Tap on an un-filled drop → fill up to that one; tap on a filled → fill one more
+        const nextFilled = idx < filled ? idx + 1 : Math.min(CUPS, filled + 1);
+        day.water_ml = nextFilled * ML_PER_CUP;
+        saveDay(day);
+        renderWater(day);
+        updateSunflowerSVG(day);
+        // Pop animation on the drop that just got filled
+        const popDrop = waterDropsEl.querySelector(`.drop-btn[data-drop="${nextFilled - 1}"]`);
+        if (popDrop) {
+          popDrop.classList.remove('drop-pop');
+          void popDrop.offsetWidth; // restart animation
+          popDrop.classList.add('drop-pop');
+          setTimeout(() => popDrop.classList.remove('drop-pop'), 320);
+        }
+      }
     });
 
-    document.getElementById('waterCups').addEventListener('pointercancel', () => {
-      clearTimeout(waterPressTimer);
-      waterPressTimer = null;
+    waterDropsEl.addEventListener('pointerleave', () => {
+      if (waterPressTimer) {
+        clearTimeout(waterPressTimer);
+        waterPressTimer = null;
+      }
     });
 
-    document.getElementById('waterCups').addEventListener('contextmenu', e => e.preventDefault());
+    waterDropsEl.addEventListener('pointercancel', () => {
+      if (waterPressTimer) {
+        clearTimeout(waterPressTimer);
+        waterPressTimer = null;
+      }
+    });
+
+    waterDropsEl.addEventListener('contextmenu', e => e.preventDefault());
 
     /* ─── Meds ────────────────────────────────────────────── */
     function renderMeds(day) {
@@ -2639,7 +3031,7 @@
       const taken = !!day.meds_taken;
       btn.classList.toggle('taken', taken);
       btn.setAttribute('aria-pressed', String(taken));
-      txt.textContent = taken ? 'Taken ✓' : 'Not taken yet';
+      txt.textContent = taken ? 'Taken ✓' : 'Not yet';
     }
 
     document.getElementById('medsToggleBtn').addEventListener('click', () => {
@@ -2767,18 +3159,31 @@
     });
 
     /* ─── Streaks ────────────────────────────────────────── */
+    // Sum meal estimates for a given day record
+    function dayTotals(rec) {
+      const meals = rec?.meals || [];
+      return {
+        cal: meals.reduce((s, m) => s + (m.estimates?.calories  || 0), 0),
+        pro: meals.reduce((s, m) => s + (m.estimates?.protein_g || 0), 0),
+        salt: meals.reduce((s, m) => s + (m.estimates?.salt_g   || 0), 0),
+      };
+    }
+
+    // Generic streak computation. `metricFn(rec, targets)` returns true if the
+    // day hits the threshold. Treat days pause (skip without breaking). If the
+    // current day doesn't hit yet, we skip it rather than zeroing out.
     function computeStreak(metricFn) {
-      const waterMin = loadSettings().targets.water_ml.min || 2000;
+      const targets = loadSettings().targets;
       let streak = 0;
       for (let i = 0; i <= 365; i++) {
         const rec = lsGet(STORAGE.day(isoDateMinus(i)), null);
-        if (rec?.isTreatDay) continue;          // treat days: skip, don't break
+        if (rec?.isTreatDay) continue;          // treat days pause
         if (!rec) {
-          if (i === 0) continue;                // today not logged yet: skip
+          if (i === 0) continue;                // today not logged yet
           break;
         }
-        if (!metricFn(rec, waterMin)) {
-          if (i === 0) continue;               // today in progress: skip
+        if (!metricFn(rec, targets)) {
+          if (i === 0) continue;               // today in progress
           break;
         }
         streak++;
@@ -2786,34 +3191,67 @@
       return streak;
     }
 
+    // Five individual metric streaks + one composite streak.
+    // Ceiling metrics (calories, protein, salt) hit when totals are ≤ target.
+    // Floor metrics (water) hit when intake ≥ target.
     function computeStreaks() {
-      const wm = loadSettings().targets.water_ml.min || 2000;
       return {
-        composite: computeStreak((r, w) => (r.meals?.length > 0) && r.meds_taken && (r.water_ml || 0) >= w),
-        meals:     computeStreak(r => (r.meals?.length > 0)),
-        meds:      computeStreak(r => !!r.meds_taken),
-        water:     computeStreak((r, w) => (r.water_ml || 0) >= w),
+        composite: computeStreak((r, t) => {
+          const d = dayTotals(r);
+          return (r.meals?.length > 0)
+              && r.meds_taken
+              && (r.water_ml || 0) >= (t.water_ml.min || 2000)
+              && d.cal  <= (t.calories.max || Infinity)
+              && d.pro  <= (t.protein_g.max || Infinity)
+              && d.salt <= (t.salt_g.max    || Infinity);
+        }),
+        calories: computeStreak((r, t) =>
+          (r.meals?.length > 0) && dayTotals(r).cal <= (t.calories.max || Infinity)),
+        protein:  computeStreak((r, t) =>
+          (r.meals?.length > 0) && dayTotals(r).pro <= (t.protein_g.max || Infinity)),
+        salt:     computeStreak((r, t) =>
+          (r.meals?.length > 0) && dayTotals(r).salt <= (t.salt_g.max || Infinity)),
+        water:    computeStreak((r, t) =>
+          (r.water_ml || 0) >= (t.water_ml.min || 2000)),
+        meds:     computeStreak(r => !!r.meds_taken),
       };
     }
 
     function renderStreak(day) {
-      const treatBadge = document.getElementById('treatBadge');
-      const streakRow  = document.getElementById('streakRow');
-      treatBadge.style.display = day.isTreatDay ? '' : 'none';
+      document.getElementById('treatBadge').style.display = day.isTreatDay ? '' : 'none';
 
       const s = computeStreaks();
-      if (!s.composite && !s.meals && !s.meds && !s.water) {
-        streakRow.innerHTML = '<span class="streak-composite" style="font-family:Lora,serif;font-size:0.88rem;color:var(--ink-soft)">Start your streak today 🌱</span>';
-        return;
+      const pillHost = document.getElementById('streakPillHost');
+      const boxesEl  = document.getElementById('streakBoxes');
+
+      // Composite pill
+      if (s.composite > 0) {
+        pillHost.innerHTML = `
+          <div class="streak-pill">
+            <span class="sp-emoji">🌻</span>
+            <span class="sp-num">${s.composite}</span>
+            <span class="sp-text">${s.composite === 1 ? 'day' : 'days'} in bloom</span>
+          </div>`;
+      } else {
+        pillHost.innerHTML = `
+          <div class="streak-pill">
+            <span class="streak-pill-empty">Start your streak today 🌱</span>
+          </div>`;
       }
-      const comp = s.composite > 0
-        ? `<span class="streak-composite">🌻 ${s.composite}d streak</span>` : '';
-      const pips = [
-        s.meals > 0 ? `<span class="streak-pip">🥗 ${s.meals}d</span>` : '',
-        s.meds  > 0 ? `<span class="streak-pip">💊 ${s.meds}d</span>`  : '',
-        s.water > 0 ? `<span class="streak-pip">💧 ${s.water}d</span>` : '',
-      ].filter(Boolean).join('');
-      streakRow.innerHTML = comp + (pips ? `<span class="streak-pips">${pips}</span>` : '');
+
+      // Five per-metric boxes
+      const metrics = [
+        { key: 'calories', label: 'Cal',  days: s.calories },
+        { key: 'protein',  label: 'Pro',  days: s.protein  },
+        { key: 'salt',     label: 'Salt', days: s.salt     },
+        { key: 'water',    label: 'H₂O',  days: s.water    },
+        { key: 'meds',     label: 'Meds', days: s.meds     },
+      ];
+      boxesEl.innerHTML = metrics.map(m => `
+        <div class="streak-box">
+          <div class="streak-box-num${m.days > 0 ? '' : ' zero'}">${m.days}</div>
+          <div class="streak-box-label">${m.label}</div>
+        </div>`).join('');
     }
 
     // Long-press date to toggle treat day
